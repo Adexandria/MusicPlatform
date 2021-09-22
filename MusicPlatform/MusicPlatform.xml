@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MusicPlatform</name>
+    </assembly>
+    <members>
+        <member name="M:MusicPlatform.Controllers.UserController.SignUp(MusicPlatform.Model.User.SignUpUser)">
+            <param name="newUser">
+            an object to sign up a user
+            </param>
+             <summary>
+             Sign up a new user
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.UserController.SignUpArtist(MusicPlatform.Model.User.SignUpArtist)">
+            <param name="newUser">
+            an object to sign up a user
+            </param>
+             <summary>
+             Sign up a new user
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.UserController.VerifyEmailToken(MusicPlatform.Model.User.Token,System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="token">
+            a token to confirm user's email
+            </param>
+             <summary>
+            email confrimation
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.UserController.Login(MusicPlatform.Model.User.Login)">
+            <param name="model">
+            an object to login
+            </param>
+             <summary>
+            Login User
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.UserController.ResetPassword(System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+             <summary>
+            reset password
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.UserController.VerifyPasswordToken(MusicPlatform.Model.User.ResetPassword,System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="resetPassword">
+            an object to reset a password
+            </param>
+             <summary>
+            verify token/reset password confirmation
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.UserController.ChangeUsername(MusicPlatform.Model.User.UserName,System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="name">
+            an object used to change user's username
+            </param>
+             <summary>
+             change username
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+    </members>
+</doc>
