@@ -79,20 +79,21 @@ namespace MusicPlatform
                     }
 
                 });
-                c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
                 {
-                   
+
                     Name = "Authorization",
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     In = ParameterLocation.Header,
-                    BearerFormat = "Basic",
+                    BearerFormat = "Bearer",
                     Description = "Enter Token Only"
                 });
+
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
-                          new OpenApiSecurityScheme
+                         new OpenApiSecurityScheme
                             {
                                 Reference = new OpenApiReference
                                 {
@@ -100,8 +101,9 @@ namespace MusicPlatform
                                     Id = "basic"
                                 }
                             },
-                            new string[] {}
+                          new string[] {}
                     }
+
                 });
             });
            
@@ -115,15 +117,15 @@ namespace MusicPlatform
                 options.AccessDeniedPath = PathString.Empty;
 
             });
-            services.AddAuthentication(AzureADDefaults.OpenIdScheme).AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", options => { })
-               .AddAzureAD(opt=> Configuration.Bind("AzureAd", opt));
+           services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", options => { });
 
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("BasicAuthentication", new AuthorizationPolicyBuilder("BasicAuthentication").RequireAuthenticatedUser().Build());
                 
             });
-          
+           
+
         }
       
 
