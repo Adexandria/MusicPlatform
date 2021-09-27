@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MusicPlatform.Model.User
+namespace MusicPlatform.Model.User.SignUpDTO
 {
     public class SignUpUser :SignUp
     {
