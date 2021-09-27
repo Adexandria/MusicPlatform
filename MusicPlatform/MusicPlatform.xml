@@ -4,7 +4,7 @@
         <name>MusicPlatform</name>
     </assembly>
     <members>
-        <member name="M:MusicPlatform.Controllers.UserController.SignUp(MusicPlatform.Model.User.SignUpUser)">
+        <member name="M:MusicPlatform.Controllers.AccountController.SignUp(MusicPlatform.Model.User.SignUpDTO.SignUpUser)">
             <param name="newUser">
             an object to sign up a user
             </param>
@@ -14,7 +14,7 @@
              
              <returns>A string status</returns>
         </member>
-        <member name="M:MusicPlatform.Controllers.UserController.SignUpArtist(MusicPlatform.Model.User.SignUpArtist)">
+        <member name="M:MusicPlatform.Controllers.AccountController.SignUpArtist(MusicPlatform.Model.User.SignUpDTO.SignUpArtist)">
             <param name="newUser">
             an object to sign up a user
             </param>
@@ -24,7 +24,7 @@
              
              <returns>A string status</returns>
         </member>
-        <member name="M:MusicPlatform.Controllers.UserController.VerifyEmailToken(MusicPlatform.Model.User.Token,System.String)">
+        <member name="M:MusicPlatform.Controllers.AccountController.VerifyEmailToken(MusicPlatform.Model.User.Token,System.String)">
             <param name="username">
             \a user's username
             </param>
@@ -37,7 +37,7 @@
              
              <returns>A string status</returns>
         </member>
-        <member name="M:MusicPlatform.Controllers.UserController.Login(MusicPlatform.Model.User.Login)">
+        <member name="M:MusicPlatform.Controllers.AccountController.Login(MusicPlatform.Model.User.Login.Login)">
             <param name="model">
             an object to login
             </param>
@@ -47,7 +47,7 @@
              
              <returns>A string status</returns>
         </member>
-        <member name="M:MusicPlatform.Controllers.UserController.ResetPassword(System.String)">
+        <member name="M:MusicPlatform.Controllers.SettingsController.ResetPassword(System.String)">
             <param name="username">
             \a user's username
             </param>
@@ -57,7 +57,7 @@
              
              <returns>A string status</returns>
         </member>
-        <member name="M:MusicPlatform.Controllers.UserController.VerifyPasswordToken(MusicPlatform.Model.User.ResetPassword,System.String)">
+        <member name="M:MusicPlatform.Controllers.SettingsController.VerifyPasswordToken(MusicPlatform.Model.User.ResetPassword,System.String)">
             <param name="username">
             \a user's username
             </param>
@@ -70,7 +70,7 @@
              
              <returns>A string status</returns>
         </member>
-        <member name="M:MusicPlatform.Controllers.UserController.ChangeUsername(MusicPlatform.Model.User.UserName,System.String)">
+        <member name="M:MusicPlatform.Controllers.SettingsController.ChangeUsername(MusicPlatform.Model.User.UserName,System.String)">
             <param name="username">
             \a user's username
             </param>
