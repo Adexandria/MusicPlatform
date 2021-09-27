@@ -39,31 +39,37 @@ namespace MusicPlatform.Services
 
             // Get authorization key
             var authorizationHeader = Request.Headers["Authorization"].ToString();
-            var authHeaderRegex = new Regex(@"Bearer (.*)");
+            var authBearerRegex = new Regex(@"Bearer (.*)");
             
 
-            if (!authHeaderRegex.IsMatch(authorizationHeader))
+            if (!authBearerRegex.IsMatch(authorizationHeader))
             {
                 return Task.FromResult(AuthenticateResult.Fail("Authorization code not formatted properly."));
             }
 
-            var authBase64 = Encoding.UTF8.GetString(Convert.FromBase64String(authHeaderRegex.Replace(authorizationHeader, "$1")));
+            var authBase64 = Encoding.UTF8.GetString(Convert.FromBase64String(authBearerRegex.Replace(authorizationHeader, "$1")));
             var authSplit = authBase64.Split(Convert.ToChar(":"), 2);
             var authUsername = authSplit[0];
             var authPassword = authSplit.Length > 1 ? authSplit[1] : throw new Exception("Unable to get password");
 
-            var currentUser = userManager.FindByNameAsync(authUsername).Result;
-            var isVerify = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, authPassword);
 
-            if (authUsername != currentUser.UserName || isVerify.ToString() != "Success")
+
+            var currentUser = userManager.FindByNameAsync(authUsername).Result;
+            if(currentUser != null)
             {
+                var isVerify = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, authPassword);
+
+                if (isVerify.ToString() != "Success")
+                {
                 return Task.FromResult(AuthenticateResult.Fail("The username or password is not correct."));
+                }
+                var authenticatedUser = new AuthenticatedUser("BasicAuthentication", true, currentUser.UserName);
+                var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(authenticatedUser));
+
+                return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
             }
 
-            var authenticatedUser = new AuthenticatedUser("BasicAuthentication", true, currentUser.UserName);
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(authenticatedUser));
-            
-            return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
+            return Task.FromResult(AuthenticateResult.Fail("Unauthorized"));
         }
     }
 }
