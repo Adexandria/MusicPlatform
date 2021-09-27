@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MusicPlatform.Model.User;
-
+using MusicPlatform.Model.User.Login;
+using MusicPlatform.Model.User.SignUpDTO;
 
 namespace MusicPlatform.Profiles
 {
