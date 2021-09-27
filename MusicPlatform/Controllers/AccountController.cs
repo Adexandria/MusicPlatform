@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.User;
+using MusicPlatform.Model.User.Login;
+using MusicPlatform.Model.User.SignUpDTO;
 using System;
 using System.Security.Claims;
 using System.Text;
@@ -14,14 +15,14 @@ namespace MusicPlatform.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class AccountController : ControllerBase
     {
         readonly UserManager<UserModel> userManager;
         private readonly IPasswordHasher<UserModel> passwordHasher;
         private readonly SignInManager<UserModel> signInManager;
         private readonly IMapper mapper;
         
-        public UserController(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, IMapper mapper, IPasswordHasher<UserModel> passwordHasher)
+        public AccountController(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, IMapper mapper, IPasswordHasher<UserModel> passwordHasher)
         {
             this.mapper = mapper;
             this.userManager = userManager;
@@ -37,13 +38,11 @@ namespace MusicPlatform.Controllers
         /// </summary>
         /// 
         /// <returns>A string status</returns>
-        //The Function creates a new user
-        //using user manager library
-        //then logins in the newly created user
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces("application/json")]
+        [AllowAnonymous]
         [HttpPost("signup")]
         public async Task<ActionResult> SignUp(SignUpUser newUser)
         {
@@ -90,6 +89,7 @@ namespace MusicPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [AllowAnonymous]
         [Produces("application/json")]
         [HttpPost("signup/artist")]
         public async Task<ActionResult> SignUpArtist(SignUpArtist newUser)
@@ -175,7 +175,7 @@ namespace MusicPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [AllowAnonymous]
         [Produces("application/json")]
         [HttpPost("login")]
         public async Task<ActionResult> Login(Login model)
@@ -190,7 +190,7 @@ namespace MusicPlatform.Controllers
                 var passwordVerifyResult = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, model.Password);
                 if (passwordVerifyResult.ToString() == "Success")
                 {
-                    await signInManager.SignInAsync(currentUser, new AuthenticationProperties() { IsPersistent = false},"BasicAuthentication");
+                    await signInManager.PasswordSignInAsync(currentUser.UserName, model.Password, false, false);
                     var bearertoken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{currentUser.UserName}:{model.Password}"));
                     return Ok($"bearer:{bearertoken}");
                 }
@@ -205,170 +205,11 @@ namespace MusicPlatform.Controllers
 
         }
 
-        ///<param name="username">
-        ///\a user's username
-        ///</param>
-        /// <summary>
-        ///reset password
-        /// </summary>
-        /// 
-        /// <returns>A string status</returns>
-
-        //To generate the token to reset password
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Produces("application/json")]
-        [Authorize("BasicAuthentication")]
-        [HttpGet("{username}/password/reset")]
-        public async Task<ActionResult<Token>> ResetPassword(string username)
-        {
-            try
-            {
-                var currentUser = await GetUser(username);
-                if (currentUser == null) return NotFound("username doesn't exist");
-                var passwordResetToken = await userManager.GeneratePasswordResetTokenAsync(currentUser);
-                Token token = new Token() { GeneratedToken = passwordResetToken };
-                return Ok(token);
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e.Message);
-            }
-
-        }
-        ///<param name="username">
-        ///\a user's username
-        ///</param>
-        ///<param name="resetPassword">
-        ///an object to reset a password
-        ///</param>
-        /// <summary>
-        ///verify token/reset password confirmation
-        /// </summary>
-        /// 
-        /// <returns>A string status</returns>
-        //To verify the Password reset token
-        //which gives access to change the user's password
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Produces("application/json")]
-        [HttpPost("{username}/password/verifytoken")]
-        public async Task<ActionResult> VerifyPasswordToken(ResetPassword resetPassword, string username)
-        {
-            try
-            {
-                var currentUser = await GetUser(username);
-                if (currentUser == null) return NotFound("username doesn't exist");
-                var isVerify = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, resetPassword.NewPassword);
-                if (isVerify.ToString() == "Success") return BadRequest("Old password can't be new password");
-                var isVerifyResult = await userManager.ResetPasswordAsync(currentUser, resetPassword.Token, resetPassword.NewPassword);
-                if (isVerifyResult.Succeeded)
-                {
-                    return Ok("Password changed");
-                }
-                else
-                {
-                    return BadRequest("Try Again");
-                }
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e.Message);
-            }
-
-        }
-
-        ///<param name="username">
-        ///\a user's username
-        ///</param>
-        ///<param name="name">
-        ///an object used to change user's username
-        ///</param>
-        /// <summary>
-        /// change username
-        /// </summary>
-        /// 
-        /// <returns>A string status</returns>
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Produces("application/json")]
-        [Authorize("BasicAuthentication")]
-        [HttpPost("{username}/change")]
-        public async Task<ActionResult<UserModel>> ChangeUsername(UserName name, string username)
-        {
-            try
-            {
-                var currentUser = await GetUser(username);
-                if (currentUser == null) return NotFound("username doesn't exist");
-                var result = await userManager.SetUserNameAsync(currentUser, name.NewUsername);
-                if (result.Succeeded)
-                {
-                    return this.StatusCode(StatusCodes.Status200OK, "Successfully Changed");
-                }
-                else
-                {
-                    return BadRequest(result.Errors);
-                }
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e.Message);
-            }
-
-        }
-
-      /*  ///<param name="username">
-        ///\a user's username
-        ///</param>
-        /// <summary>
-        /// sign out user
-        /// </summary>
-        /// 
-        /// <returns>A string status</returns>
-        //To sign out a user
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Produces("application/json")]
-        [Authorize("BasicAuthentication")]
-        [HttpPost("{username}/signout")]
-        public async Task<ActionResult> Signout(string username)
-        {
-            try
-            {
-                var currentUser = await GetUser(username);
-                if (currentUser == null) return NotFound("username doesn't exist");
-                var principalClaim = this.User;
-                if (principalClaim.Identity.IsAuthenticated)
-                {
-                    await signInManager.SignOutAsync();
-                    return Ok("Successful");
-                    principalClaim.Identity.
-                }
-                return BadRequest("User is signed out");
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e.Message);
-            }
-
-        }*/
-
         [NonAction]
         private async Task<string> EmailConfirmationToken(UserModel newUser)
         {
             return await userManager.GenerateEmailConfirmationTokenAsync(newUser);
+            
         }
 
         [NonAction]
@@ -380,4 +221,3 @@ namespace MusicPlatform.Controllers
       
     }
 }
-    
