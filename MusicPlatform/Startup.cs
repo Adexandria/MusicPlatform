@@ -20,7 +20,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 
 namespace MusicPlatform
 {
@@ -44,6 +43,10 @@ namespace MusicPlatform
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
             services.AddDbContext<IdentityDb>(opts =>
+            {
+                opts.UseSqlServer(Configuration["ConnectionStrings:MusicPlatform"]).EnableSensitiveDataLogging();
+            });
+            services.AddDbContext<DataDb>(opts =>
             {
                 opts.UseSqlServer(Configuration["ConnectionStrings:MusicPlatform"]).EnableSensitiveDataLogging();
             });
@@ -79,14 +82,14 @@ namespace MusicPlatform
                     }
 
                 });
-                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
                 {
 
                     Name = "Authorization",
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     In = ParameterLocation.Header,
-                    BearerFormat = "Bearer",
+                    BearerFormat = "Basic",
                     Description = "Enter Token Only"
                 });
 
@@ -117,8 +120,8 @@ namespace MusicPlatform
                 options.AccessDeniedPath = PathString.Empty;
 
             });
-           services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", options => { });
-
+            services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", options => { });
+                
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("BasicAuthentication", new AuthorizationPolicyBuilder("BasicAuthentication").RequireAuthenticatedUser().Build());
@@ -136,11 +139,6 @@ namespace MusicPlatform
                 {
                 app.UseDeveloperExceptionPage();
                 }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
-            }
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUI(setupAction =>
