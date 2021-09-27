@@ -182,6 +182,7 @@ namespace MusicPlatform.Controllers
         {
             try
             {
+                
                 var logindetails = mapper.Map<UserModel>(model);
                 var currentUser = await userManager.FindByNameAsync(logindetails.UserName);
                 if (currentUser == null) return NotFound("Username doesn't exist");
