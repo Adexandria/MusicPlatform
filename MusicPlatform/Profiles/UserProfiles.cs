@@ -5,9 +5,9 @@ using MusicPlatform.Model.User.SignUpDTO;
 
 namespace MusicPlatform.Profiles
 {
-    public class UserProfile : Profile
+    public class UserProfiles : Profile
     {
-        public UserProfile()
+        public UserProfiles()
         {
             CreateMap<SignUpUser, UserModel>().ForMember(s=>s.PasswordHash,opt=>opt.MapFrom(s=>s.Password));
             CreateMap<SignUpArtist, UserModel>().ForMember(s => s.PasswordHash, opt => opt.MapFrom(s => s.Password))
