@@ -9,17 +9,15 @@ namespace MusicPlatform.Services
 {
     public interface IUserProfile
     {
-        Task<UserProfile> GetUserProfile(string userId);
-        Task<UserProfile> AddUserProfile(UserProfile userProfile);
-        Task<UserProfile> UpdateUserProfile(UserProfile userProfile);
-        Task<UserImage> AddImage(UserImage userImage);
-        Task<UserImage> UpdateUserImage(UserImage userImage);
-        Task DeleteImage(string userId);
-        Task<FollowingModel> GetArtistFollowers(string artistId);
-        Task<FollowingModel> GetUserFollowing(string userId);
-        Task<FollowingModel> Follow(FollowingModel model);
-        Task UnFollow(string artistId);
-        Task<int> GetArtistSongs(string artistId);
+        Task<UserProfile> GetUserProfile(string username);
+        Task AddUserProfile(string username);
+        Task AddImage(string username, string imageUrl);
+        Task<UserImage> UpdateUserImage(string url,string username);
+        Task DeleteImage(string username);
+        //IEnumerable<FollowingModel> GetArtistFollowers(string stagename);
+      //  IEnumerable<FollowingModel> GetUserFollowing(string username);
+        Task Follow(string username,string stagename);
+        Task UnFollow(string username,string stagename);
         Task Save();
 
     }
