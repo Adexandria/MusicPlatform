@@ -7,8 +7,7 @@ namespace MusicPlatform.Model.User.Profile
 {
     public class UserImage
     {
-        [Key]
-        public Guid ImageId { get; set; }
+ 
         [ForeignKey("User")]
         public string UserId { get; set; }
         public string ImageUrl { get; set; }

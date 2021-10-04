@@ -6,8 +6,6 @@ namespace MusicPlatform.Model.Library
 {
     public class CreditModel
     {
-        [Key]
-        public Guid CreditId { get; set; }
         public string Producer { get; set; }
         public string Writer { get; set; }
         public string Performer { get; set; }
