@@ -8,18 +8,20 @@ namespace MusicPlatform.Services
 {
     public interface ISong
     {
-        Task<SongModel> AddSong(SongModel song);
-        Task<SongModel> GetSong(string artistId);
-        Task<SongModel> UpdateSong(SongModel song,Guid songId);
-        Task DeleteSong(Guid songId);
+        Task AddSong(SongModel song,string artistId);
+        Task<SongModel> GetSong(string artistId,Guid songId);
+        Task UpdateSong(SongModel song,Guid songId,string artistId);
+        Task DeleteSong(Guid songId, string artistId);
 
-        Task<CreditModel> AddCredit(CreditModel credit);
-        Task<CreditModel> UpdateCredit(CreditModel credit, Guid songId);
+        Task AddCredit(CreditModel credit);
+        Task UpdateCredit(CreditModel credit, Guid songId);
         Task DeleteCredit(Guid creditId);
 
-        Task<SongImage> AddImage(SongImage image);
-        Task<SongImage> UpdateImage(SongImage image,Guid songId);
+        Task AddImage(string url,Guid songId);
+        Task UpdateImage(SongImage image,Guid songId);
         Task DeleteImage(Guid songId);
+
+        Task Save();
 
     }
 }
