@@ -38,7 +38,7 @@ namespace MusicPlatform.Controllers
             try
             {
                 var currentuser = await userDetail.GetUser(username);
-                if(currentuser == null)
+                if (currentuser == null)
                 {
                     return NotFound("User not found");
                 }
@@ -49,12 +49,12 @@ namespace MusicPlatform.Controllers
 
                 return BadRequest(e.Message);
             }
-            
+
         }
 
         [Authorize("BasicAuthentication")]
         [HttpPost("image")]
-        public async Task<ActionResult> AddImage([FromRoute]string username, IFormFile image)
+        public async Task<ActionResult> AddImage([FromRoute] string username, IFormFile image)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace MusicPlatform.Controllers
                 {
                     return NotFound("Image not found");
                 }
-               
+
                 await _blob.Upload(image);
                 string url = _blob.GetUri(image.FileName).ToString();
                 await _profile.AddImage(username, url);
@@ -78,7 +78,7 @@ namespace MusicPlatform.Controllers
 
                 return BadRequest(e.Message);
             }
-            
+
         }
 
         //[Authorize("BasicAuthentication")]
@@ -99,7 +99,7 @@ namespace MusicPlatform.Controllers
 
                 await _blob.Upload(image);
                 string url = _blob.GetUri(image.FileName).ToString();
-                await _profile.UpdateUserImage(url,username);
+                await _profile.UpdateUserImage(url, username);
                 return Ok("Successful");
             }
             catch (Exception e)
@@ -127,7 +127,7 @@ namespace MusicPlatform.Controllers
                     return Ok("Sucessful");
                 }
                 return NotFound("Image doesn't exist");
-                
+
             }
             catch (Exception e)
             {
@@ -137,4 +137,5 @@ namespace MusicPlatform.Controllers
         }
     }
 }
+
 

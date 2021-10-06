@@ -20,10 +20,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Azure.Storage.Blobs;
-using Microsoft.Extensions.Azure;
 using Text_Speech.Services;
+using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
+using Microsoft.Extensions.Azure;
 
 namespace MusicPlatform
 {
@@ -116,7 +116,6 @@ namespace MusicPlatform
                     }
 
                 });
-                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
            
             services.AddIdentity<UserModel, IdentityRole>().AddEntityFrameworkStores<IdentityDb>().AddSignInManager().AddDefaultTokenProviders();
@@ -143,6 +142,7 @@ namespace MusicPlatform
             {
                 builder.AddBlobServiceClient(Configuration["ConnectionStrings:AzureBlobStorage:blob"], preferMsi: true);
             });
+
         }
       
 
@@ -151,7 +151,7 @@ namespace MusicPlatform
             {
                 if (env.IsDevelopment())
                 {
-                    app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
                 }
             app.UseHttpsRedirection();
             app.UseSwagger();
@@ -170,9 +170,7 @@ namespace MusicPlatform
                 endpoints.MapControllers();
             });
             }
-
     }
-
     internal static class StartupExtensions
     {
         public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
