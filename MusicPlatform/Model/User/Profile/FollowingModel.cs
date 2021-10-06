@@ -8,9 +8,13 @@ namespace MusicPlatform.Model.User.Profile
     {
         [Key]
         public Guid FollowingId { get; set; }
-        [ForeignKey("User")]
+        [ForeignKey("Id")]
         public string UserId { get; set; }
-        public UserModel User { get; set; }
+        [ForeignKey("Id")]
         public string ArtistId { get; set; }
+        [ForeignKey("UserProfile")]
+        public Guid ProfileId { get; set; }
+        public virtual UserProfile UserProfile { get; set; }
+        public UserModel User { get; set; }
     }
 }
