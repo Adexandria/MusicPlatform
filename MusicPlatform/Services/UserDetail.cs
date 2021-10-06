@@ -17,6 +17,11 @@ namespace MusicPlatform.Services
            UserModel current = await userManager.FindByNameAsync(username);
             return current.Id;
         }
+        public async Task<UserModel> GetUser(string username)
+        {
+            UserModel currentUser = await userManager.FindByNameAsync(username);
+            return currentUser;
+        }
         public async Task<bool> isVerified(string username)
         {
             UserModel current = await userManager.FindByNameAsync(username);
