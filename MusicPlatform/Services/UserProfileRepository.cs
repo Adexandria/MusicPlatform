@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Text_Speech.Services;
 
 namespace MusicPlatform.Services
 {
@@ -14,10 +15,12 @@ namespace MusicPlatform.Services
     {
         private readonly DataDb db;
         private readonly UserDetail userDetail;
-        public UserProfileRepository( DataDb db, UserManager<UserModel> userManager, UserDetail userDetail)
+        private readonly IBlob blob;
+        public UserProfileRepository( DataDb db, UserDetail userDetail,IBlob blob)
         {
             this.db = db ?? throw new NullReferenceException(nameof(db));
             this.userDetail = userDetail ?? throw new NullReferenceException(nameof(userDetail));
+            this.blob = blob ?? throw new NullReferenceException(nameof(blob));
         }
         public async Task AddImage(string username,string imageUrl)
         {
@@ -27,14 +30,30 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(username));
                 }
-                var userId = await userDetail.GetUserId(username);
-                UserImage userImage = new UserImage()
+                var currentimage = await GetImage(username);
+                if(currentimage != null)
                 {
-                    UserId = userId,
-                    ImageUrl = imageUrl
-                };
-                await db.UserImages.AddAsync(userImage);
-                await Save();
+                    await UpdateUserImage(imageUrl, username);
+                }
+                else
+                {
+                    var userId = await userDetail.GetUserId(username);
+                    if (userId == null)
+                    {
+                        throw new NullReferenceException(nameof(userId));
+                    }
+                    var profileId = await GetUserProfileId(username);
+                    UserImage userImage = new UserImage()
+                    {
+                        ImageId = new Guid(),
+                        UserId = userId,
+                        ImageUrl = imageUrl,
+                        ProfileId = profileId
+                    };
+                    await db.UserImages.AddAsync(userImage);
+                    await Save();
+                }
+                
             }
             catch (Exception e)
             {
@@ -52,9 +71,19 @@ namespace MusicPlatform.Services
                     throw new NullReferenceException(nameof(url));
                 }
                 var currentImage = await GetImage(username);
+                if(currentImage == null)
+                {
+                    throw new NullReferenceException(nameof(currentImage));
+                }
                 db.Entry(currentImage).State = EntityState.Detached;
-                UserImage userImage = new UserImage() { ImageUrl = url, UserId = username };
+                UserImage userImage = new UserImage() {
+                    ImageUrl = url, 
+                    UserId = currentImage.UserId,
+                    ImageId = currentImage.ImageId,
+                    ProfileId = currentImage.ProfileId
+                };
                 db.Entry(userImage).State = EntityState.Modified;
+                await  blob.DeleteImage(currentImage.ImageUrl);
                 await Save();
                 return userImage;
             }
@@ -74,7 +103,12 @@ namespace MusicPlatform.Services
                     throw new NullReferenceException(nameof(username));
                 }
                 var currentimage = await GetImage(username);
+                if(currentimage == null)
+                {
+                    throw new NullReferenceException(nameof(currentimage));
+                }
                 db.UserImages.Remove(currentimage);
+                await blob.DeleteImage(currentimage.ImageUrl);
                 await Save();
             }
             catch (Exception e)
@@ -98,6 +132,7 @@ namespace MusicPlatform.Services
                 var userId = await userDetail.GetUserId(username);
                 UserProfile userProfile = new UserProfile()
                 {
+                    ProfileId = new Guid(),
                     UserId = userId
                 };
                 await db.Profiles.AddAsync(userProfile);
@@ -120,8 +155,8 @@ namespace MusicPlatform.Services
                     throw new NullReferenceException(nameof(username));
                 }
                 var userId = await userDetail.GetUserId(username);
-                var currentprofile = await db.Profiles.Where(s => s.UserId == userId).Include(s => s.User)
-                    .Include(s => s.UserImage).FirstOrDefaultAsync();
+                var currentprofile = await db.Profiles.Where(s => s.UserId == userId).Include(s=>s.UserImage)
+                    .FirstOrDefaultAsync();
                 if (await userDetail.isVerified(username))
                 {
                     currentprofile.Following = GetArtistFollowers(username).ToList();
@@ -130,7 +165,8 @@ namespace MusicPlatform.Services
                 {
                     currentprofile.Following = GetUserFollowings(username).ToList();
                 }
-                currentprofile.Song = GetArtistSongs(username).ToList();
+                currentprofile.User = await userDetail.GetUser(username);
+                currentprofile.UserImage = await GetImage(username);
                 return currentprofile;
             }
             catch (Exception e)
@@ -202,16 +238,20 @@ namespace MusicPlatform.Services
             await db.SaveChangesAsync();
         }
 
-       private async Task<UserImage> GetImage(string username)
+       public async Task<UserImage> GetImage(string username)
        {
             var userId = await userDetail.GetUserId(username);
-            return await db.UserImages.Where(s => s.UserId == userId).FirstOrDefaultAsync();
+            if(userId == null)
+            {
+                throw new NullReferenceException(userId);
+            }
+            return await db.UserImages.Where(s => s.UserId == userId).AsNoTracking().FirstOrDefaultAsync();
        }
 
         private IEnumerable<SongModel> GetArtistSongs(string stagename)
         {
             var artistId = userDetail.GetUserId(stagename).Result;
-            return db.Songs.Where(s => s.ArtistId == artistId).OrderByDescending(s => s.Download).Take(3);
+            return db.Songs.Where(s => s.ArtistId == artistId).OrderByDescending(s => s.Download).Take(3).AsNoTracking();
         }
         private IEnumerable<FollowingModel> GetArtistFollowers(string stagename)
         {
@@ -220,7 +260,7 @@ namespace MusicPlatform.Services
                 throw new NullReferenceException(nameof(stagename));
             }
             var artistId = userDetail.GetUserId(stagename).Result;
-            return db.Followings.Where(s => s.ArtistId == artistId);
+            return db.Followings.Where(s => s.ArtistId == artistId).AsNoTracking();
         }
 
 
@@ -231,13 +271,18 @@ namespace MusicPlatform.Services
                 throw new NullReferenceException(nameof(username));
             }
             var userId = userDetail.GetUserId(username).Result;
-            return db.Followings.Where(s => s.UserId == userId);
+            return db.Followings.Where(s => s.UserId == userId).AsNoTracking();
         }
         private async Task<FollowingModel> GetUserFollowing(string username,string stagename)
         {
             var userId = await userDetail.GetUserId(username);
             var artistId = await userDetail.GetUserId(stagename);
-            return await db.Followings.Where(s => s.UserId == userId).Where(s=>s.ArtistId == artistId).FirstOrDefaultAsync();
+            return await db.Followings.Where(s => s.UserId == userId).Where(s=>s.ArtistId == artistId).AsNoTracking().FirstOrDefaultAsync();
+        }
+        private async Task<Guid> GetUserProfileId(string username)
+        {
+            var userId = await userDetail.GetUserId(username);
+            return await db.Profiles.Where(s => s.UserId == userId).AsNoTracking().Select(s=>s.ProfileId).FirstOrDefaultAsync();
         }
     }
 }
