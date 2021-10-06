@@ -20,10 +20,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Azure.Storage.Blobs;
-using Microsoft.Extensions.Azure;
-using Text_Speech.Services;
-using Azure.Core.Extensions;
 
 namespace MusicPlatform
 {
@@ -46,10 +42,6 @@ namespace MusicPlatform
                 .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
-            services.AddScoped<UserDetail>();
-            services.AddScoped<IUserProfile, UserProfileRepository>();
-            services.AddScoped<ISong, SongRepository>();
-            services.AddScoped<IBlob, Blob>();
             services.AddDbContext<IdentityDb>(opts =>
             {
                 opts.UseSqlServer(Configuration["ConnectionStrings:MusicPlatform"]).EnableSensitiveDataLogging();
@@ -116,7 +108,6 @@ namespace MusicPlatform
                     }
 
                 });
-                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
            
             services.AddIdentity<UserModel, IdentityRole>().AddEntityFrameworkStores<IdentityDb>().AddSignInManager().AddDefaultTokenProviders();
@@ -136,13 +127,8 @@ namespace MusicPlatform
                 options.AddPolicy("BasicAuthentication", new AuthorizationPolicyBuilder("BasicAuthentication").RequireAuthenticatedUser().Build());
                 
             });
-            services.AddScoped(_ => {
-                return new BlobServiceClient(Configuration.GetConnectionString("AzureBlobStorage"));
-            });
-            services.AddAzureClients(builder =>
-            {
-                builder.AddBlobServiceClient(Configuration["ConnectionStrings:AzureBlobStorage:blob"], preferMsi: true);
-            });
+           
+
         }
       
 
@@ -151,7 +137,7 @@ namespace MusicPlatform
             {
                 if (env.IsDevelopment())
                 {
-                    app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
                 }
             app.UseHttpsRedirection();
             app.UseSwagger();
@@ -170,22 +156,5 @@ namespace MusicPlatform
                 endpoints.MapControllers();
             });
             }
-
-    }
-
-    internal static class StartupExtensions
-    {
-        public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
-        {
-            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
-            {
-                return builder.AddBlobServiceClient(serviceUri);
-            }
-            else
-            {
-                return builder.AddBlobServiceClient(serviceUriOrConnectionString);
-            }
-        }
-
     }
 }
