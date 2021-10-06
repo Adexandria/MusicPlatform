@@ -12,6 +12,7 @@ namespace MusicPlatform.Services
         Task<UserProfile> GetUserProfile(string username);
         Task AddUserProfile(string username);
         Task AddImage(string username, string imageUrl);
+        Task<UserImage> GetImage(string username);
         Task<UserImage> UpdateUserImage(string url,string username);
         Task DeleteImage(string username);
         //IEnumerable<FollowingModel> GetArtistFollowers(string stagename);
