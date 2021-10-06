@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.User;
 using MusicPlatform.Model.User.Login;
 using MusicPlatform.Model.User.SignUpDTO;
+using MusicPlatform.Services;
 using System;
 using System.Security.Claims;
 using System.Text;
@@ -21,13 +22,15 @@ namespace MusicPlatform.Controllers
         private readonly IPasswordHasher<UserModel> passwordHasher;
         private readonly SignInManager<UserModel> signInManager;
         private readonly IMapper mapper;
-        
-        public AccountController(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, IMapper mapper, IPasswordHasher<UserModel> passwordHasher)
+        private readonly IUserProfile _profile;
+
+        public AccountController(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, IMapper mapper, IPasswordHasher<UserModel> passwordHasher, IUserProfile _profile)
         {
             this.mapper = mapper;
             this.userManager = userManager;
             this.passwordHasher = passwordHasher;
             this.signInManager = signInManager;
+            this._profile = _profile;
         }
 
         ///<param name="newUser">
@@ -58,6 +61,7 @@ namespace MusicPlatform.Controllers
                         {
                             await userManager.AddToRoleAsync(signupUser, "User");
                             await userManager.AddClaimAsync(signupUser, new Claim($"{signupUser.UserName }","User"));
+                           await _profile.AddUserProfile(signupUser.UserName);
                             var token = await EmailConfirmationToken(signupUser);
                             return this.StatusCode(StatusCodes.Status201Created, $"Welcome,{signupUser.UserName} use this {token} to verify email");
                         }
