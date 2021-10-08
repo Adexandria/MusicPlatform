@@ -27,6 +27,8 @@ namespace MusicPlatform.Profiles
                 .ForMember(s => s.Following, opt => opt.MapFrom(s => s.Followings.Count()))
                 .ForMember(s => s.Followers, opt => opt.MapFrom(s => s.Followers.Count()))
                 .ForPath(s => s.ImageUrl, opt => opt.MapFrom(s => s.UserImage.ImageUrl));
+            CreateMap<UserModel, UsersDTO>().ForMember(s => s.Username, opt => opt.MapFrom(s => s.UserName));
+            CreateMap<UserModel, ArtistsDTO>().ForMember(s => s.Artist, opt => opt.MapFrom(s => s.UserName));
         }
     }
 }
