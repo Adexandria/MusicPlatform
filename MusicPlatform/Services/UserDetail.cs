@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MusicPlatform.Model.User;
+using MusicPlatform.Model.User.Profile;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,6 +12,7 @@ namespace MusicPlatform.Services
     public class UserDetail : IUser
     {
         private readonly DataDb db;
+ 
         public UserDetail( DataDb db)
         {
             this.db = db ?? throw new NullReferenceException(nameof(db));
@@ -32,6 +35,55 @@ namespace MusicPlatform.Services
                 db.Entry(currentUser).State = EntityState.Detached;
             }
             return currentUser;
+        }
+
+        public IEnumerable<UserModel> GetUsers
+        {
+            get
+            {
+                var currentUsers = db.UserModel.Where(s => s.Verified == false).AsNoTracking();
+                if (currentUsers != null)
+                {
+                    db.ChangeTracker.Clear();
+                }
+                return currentUsers;
+            }
+          
+
+        }
+
+        public IEnumerable<UserModel> GetArtists
+        {
+            get
+            {
+                var currentArtists = db.UserModel.Where(s => s.Verified == true).AsNoTracking();
+                if (currentArtists != null)
+                {
+                    db.ChangeTracker.Clear();
+                }
+                return currentArtists;
+            }
+           
+        }
+
+        public IEnumerable<UserModel> SearchUser(string username)
+        {
+            var currentUser =  db.UserModel.Where(s => s.UserName.StartsWith(username)).Where(s => s.Verified == false).AsNoTracking();
+            if (currentUser != null)
+            {
+                db.ChangeTracker.Clear();
+            }
+            return currentUser;
+        }
+
+        public  IEnumerable<UserModel> SearchArtist(string artist)
+        {
+            var currentartist = db.UserModel.Where(s => s.UserName.StartsWith(artist)).Where(s => s.Verified == true).AsNoTracking();
+            if (currentartist != null)
+            {
+                db.ChangeTracker.Clear();
+            }
+            return currentartist;
         }
     }
 }
