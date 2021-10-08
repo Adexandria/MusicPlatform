@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MusicPlatform.Model.Library;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -244,7 +245,17 @@ namespace MusicPlatform.Services
             }
            
         }
+        public IEnumerable<SongModel> GetSong(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new NullReferenceException(nameof(db));
+            }
+            return db.Songs.Where(s => s.SongName.StartsWith(name)).OrderBy(s => s.SongId).Include(s => s.User)
+                .Include(s => s.CreditModel).Include(s => s.SongImage);
+        }
 
+      
         public async Task Save()
         {
             await db.SaveChangesAsync();
