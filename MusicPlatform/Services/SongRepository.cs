@@ -9,8 +9,8 @@ namespace MusicPlatform.Services
     public class SongRepository : ISong
     {
         private readonly DataDb db;
-        private readonly UserDetail userDetail;
-        public SongRepository(DataDb db,UserDetail userDetail)
+        private readonly IUser userDetail;
+        public SongRepository(DataDb db,IUser userDetail)
         {
             this.db = db ?? throw new NullReferenceException(nameof(db));
             this.userDetail = userDetail ?? throw new NullReferenceException(nameof(userDetail));
