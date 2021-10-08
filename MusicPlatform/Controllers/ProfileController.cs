@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using MusicPlatform.Model.User.Profile;
+using MusicPlatform.Model.User.Profile.ProfileDTO;
 using MusicPlatform.Services;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,8 @@ namespace MusicPlatform.Controllers
         private readonly IUserProfile _profile;
         private readonly IBlob _blob;
         private readonly IMapper mapper;
-        private readonly UserDetail userDetail;
-        public ProfileController(IUserProfile _profile, IMapper mapper, IBlob _blob, UserDetail userDetail)
+        private readonly IUser userDetail;
+        public ProfileController(IUserProfile _profile, IMapper mapper, IBlob _blob, IUser userDetail)
         {
             this._profile = _profile;
             this.mapper = mapper;
@@ -33,7 +34,7 @@ namespace MusicPlatform.Controllers
 
         [Authorize("BasicAuthentication")]
         [HttpGet]
-        public async Task<ActionResult<UserProfile>> GetUserProfile(string username)
+        public async Task<ActionResult<UserProfileDTO>> GetUserProfile(string username)
         {
             try
             {
@@ -42,7 +43,14 @@ namespace MusicPlatform.Controllers
                 {
                     return NotFound("User not found");
                 }
-                return await _profile.GetUserProfile(username);
+                var currentprofile = await _profile.GetUserProfile(username);
+                if (currentprofile.User.Verified)
+                {
+                    var mappedArtistProfile = mapper.Map<ArtistProfileDTO>(currentprofile);
+                    return Ok(mappedArtistProfile);
+                }
+                var mappedUserProfile = mapper.Map<UserProfileDTO>(currentprofile);
+                return Ok(mappedUserProfile);
             }
             catch (Exception e)
             {
@@ -81,7 +89,7 @@ namespace MusicPlatform.Controllers
 
         }
 
-        //[Authorize("BasicAuthentication")]
+        [Authorize("BasicAuthentication")]
         [HttpPut("image")]
         public async Task<ActionResult> UpdateImage([FromRoute] string username, IFormFile image)
         {
@@ -110,6 +118,7 @@ namespace MusicPlatform.Controllers
 
         }
 
+        [Authorize("BasicAuthentication")]
         [HttpDelete("image")]
         public async Task<ActionResult> DeleteImage([FromRoute] string username)
         {
@@ -135,6 +144,8 @@ namespace MusicPlatform.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+       
     }
 }
 
