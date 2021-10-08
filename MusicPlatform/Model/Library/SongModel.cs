@@ -1,4 +1,5 @@
 ﻿using MusicPlatform.Model.User;
+using MusicPlatform.Model.User.Profile;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,9 +15,13 @@ namespace MusicPlatform.Model.Library
         public string ArtistId { get; set; }
         public DateTime ReleasedDate { get; set; } = DateTime.Now;
         public int Download { get; set; }
-
+        [ForeignKey("UserProfile")]
+        public Guid UserProfileProfileId { get; set; }
+        public virtual UserProfile UserProfile { get; set; }
         public virtual CreditModel CreditModel { get; set; }
         public virtual UserModel User { get; set; }
         public virtual SongImage SongImage { get; set; }
+
+
     }
 }
