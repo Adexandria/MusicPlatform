@@ -1,4 +1,5 @@
 ﻿using MusicPlatform.Model.User;
+using MusicPlatform.Model.User.Profile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,10 @@ namespace MusicPlatform.Services
         Task<bool> IsVerified(string username);
         Task<string> GetUserId(string username);
 
+        IEnumerable<UserModel> GetUsers { get; }
+        IEnumerable<UserModel> GetArtists { get; }
+
+        IEnumerable<UserModel> SearchUser(string username);
+       IEnumerable<UserModel> SearchArtist(string artist);
     }
 }
