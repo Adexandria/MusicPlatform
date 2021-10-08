@@ -19,6 +19,7 @@ namespace MusicPlatform.Services
       //  IEnumerable<FollowingModel> GetUserFollowing(string username);
         Task Follow(string username,string stagename);
         Task UnFollow(string username,string stagename);
+        Task<bool> IsFollowing(string username, string follower);
         Task Save();
 
     }
