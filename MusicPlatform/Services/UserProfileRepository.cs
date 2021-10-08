@@ -179,6 +179,8 @@ namespace MusicPlatform.Services
             }
         }
 
+
+
         public async Task Follow(string username, string stagename)
         {
             try
@@ -321,6 +323,7 @@ namespace MusicPlatform.Services
             var userId = await userDetail.GetUserId(username);
             return await db.Profiles.Where(s => s.UserId == userId).AsNoTracking().Select(s => s.ProfileId).FirstOrDefaultAsync();
         }
-     
+
+        
     }
 }
