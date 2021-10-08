@@ -9,6 +9,7 @@ namespace MusicPlatform.Model.User.Profile.ProfileDTO
     {
         public string Username { get; set; }
         public string ImageUrl { get; set; }
+        public int Followers { get; set; }
         public int Following { get; set; }
     }
 }
