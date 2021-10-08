@@ -46,10 +46,11 @@ namespace MusicPlatform
                 .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
-            services.AddScoped<UserDetail>();
+            services.AddScoped<IUser, UserDetail>();
             services.AddScoped<IUserProfile, UserProfileRepository>();
             services.AddScoped<ISong, SongRepository>();
             services.AddScoped<IBlob, Blob>();
+            services.AddScoped<ILibrary, LibraryRepository>();
             services.AddDbContext<IdentityDb>(opts =>
             {
                 opts.UseSqlServer(Configuration["ConnectionStrings:MusicPlatform"]).EnableSensitiveDataLogging();
@@ -144,15 +145,15 @@ namespace MusicPlatform
             });
 
         }
-      
 
-            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-            public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataDb context)
+        {
+            if (env.IsDevelopment())
             {
-                if (env.IsDevelopment())
-                {
                 app.UseDeveloperExceptionPage();
-                }
+            }
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUI(setupAction =>
@@ -169,7 +170,10 @@ namespace MusicPlatform
             {
                 endpoints.MapControllers();
             });
-            }
+            context.Database.EnsureCreated();
+            
+         }
+        }
     }
     internal static class StartupExtensions
     {
@@ -186,4 +190,4 @@ namespace MusicPlatform
         }
 
     }
-}
+
