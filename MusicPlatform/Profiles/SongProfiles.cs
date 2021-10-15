@@ -20,7 +20,10 @@ namespace MusicPlatform.Profiles
                 .ForMember(s => s.SongURL, opt => opt.MapFrom(s => s.SongUrl))
                 .ForMember(s => s.Download, opt => opt.MapFrom(s => s.Download))
                 .ForPath(s=>s.ImageUrl,opt=>opt.MapFrom(s=>s.SongImage.ImageUrl))
-                .ForMember(s => s.Credit, opt => opt.MapFrom(s => s.CreditModel))
+                .ForPath(s => s.Credit.Performer, opt => opt.MapFrom(s => s.CreditModel.Performer))
+                .ForPath(s => s.Credit.Writer, opt => opt.MapFrom(s => s.CreditModel.Writer))
+                .ForPath(s => s.Credit.RecordLabel, opt => opt.MapFrom(s => s.CreditModel.RecordLabel))
+                .ForPath(s => s.Credit.Producer, opt => opt.MapFrom(s => s.CreditModel.Producer))
                 .ForMember(s => s.ReleasedDate, opt => opt.MapFrom(s => s.ReleasedDate));
 
             CreateMap<CreditCreate, CreditModel>();
