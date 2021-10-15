@@ -8,20 +8,20 @@ namespace MusicPlatform.Services
 {
     public interface ISong
     {
-        Task AddSong(SongModel song,string artistId);
-        Task<SongModel> GetSong(string artistId,Guid songId);
+        Task AddSong(SongModel song,string artist);
+        Task<SongModel> GetSong(string artistId,string songName);
         IEnumerable<SongModel> GetSong(string name);
-        Task UpdateSong(SongModel song,Guid songId,string artistId);
-        Task DeleteSong(Guid songId, string artistId);
+        Task UpdateSong(SongModel song, string songName, string artistId);
+        Task DeleteSong(string artistId,string songName);
       //  IEnumerable<SongModel> GetSongs { get; }
        
        // Task<SongModel> GetSongById(Guid songId);
-        Task AddCredit(CreditModel credit);
+        Task AddCredit(Guid songId,CreditModel credit);
         Task UpdateCredit(CreditModel credit, Guid songId);
-        Task DeleteCredit(Guid creditId);
+        Task DeleteCredit(Guid songId);
 
         Task AddImage(string url,Guid songId);
-        Task UpdateImage(SongImage image,Guid songId);
+        Task UpdateImage(string url, Guid songId);
         Task DeleteImage(Guid songId);
 
         Task Save();

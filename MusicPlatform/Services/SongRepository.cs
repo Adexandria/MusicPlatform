@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Text_Speech.Services;
 
 namespace MusicPlatform.Services
 {
@@ -11,14 +12,18 @@ namespace MusicPlatform.Services
     {
         private readonly DataDb db;
         private readonly IUser userDetail;
-        public SongRepository(DataDb db,IUser userDetail)
+        private readonly IUserProfile _profile;
+        private readonly IBlob blob;
+        public SongRepository(DataDb db,IUser userDetail, IUserProfile _profile, IBlob blob)
         {
             this.db = db ?? throw new NullReferenceException(nameof(db));
             this.userDetail = userDetail ?? throw new NullReferenceException(nameof(userDetail));
+            this._profile = _profile ?? throw new NullReferenceException(nameof(_profile));
+            this.blob = blob;
         }
 
         //Credit Repository
-        public async Task AddCredit(CreditModel credit)
+        public async Task AddCredit(Guid songId,CreditModel credit)
         {
             try
             {
@@ -26,6 +31,8 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(credit));
                 }
+                credit.CreditId = Guid.NewGuid();
+                credit.SongId = songId;
                 await db.SongCredits.AddAsync(credit);
                 await Save();
             }
@@ -106,6 +113,7 @@ namespace MusicPlatform.Services
                 }
                 SongImage image = new SongImage()
                 {
+                    SongImageid = Guid.NewGuid(),
                     SongId = songId,
                     ImageUrl = url
                 };
@@ -120,7 +128,7 @@ namespace MusicPlatform.Services
            
 
         }
-        public async Task UpdateImage(SongImage image, Guid songId)
+        public async Task UpdateImage(string url, Guid songId)
         {
             try
             {
@@ -128,9 +136,9 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(songId));
                 }
-                if (image == null)
+                if (url == null)
                 {
-                    throw new NullReferenceException(nameof(image));
+                    throw new NullReferenceException(nameof(url));
                 }
                 var currentImage = await GetSongImage(songId);
                 if (currentImage == null)
@@ -138,7 +146,13 @@ namespace MusicPlatform.Services
                     throw new NullReferenceException(nameof(currentImage));
                 }
                 db.Entry(currentImage).State = EntityState.Detached;
-                image.SongId = songId;
+                await blob.Delete(currentImage.ImageUrl);
+                SongImage image = new SongImage()
+                {
+                    SongImageid = currentImage.SongImageid,
+                    SongId = songId,
+                    ImageUrl = url
+                };
                 db.Entry(image).State = EntityState.Modified;
             }
             catch (Exception e)
@@ -162,6 +176,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(currentImage));
                 }
+                await blob.Delete(currentImage.ImageUrl);
                 db.SongImages.Remove(currentImage);
                 await Save();
             }
@@ -184,9 +199,11 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(song));
                 }
-                song.SongId = new Guid();
+                song.SongId = Guid.NewGuid();
                 var artistId = await userDetail.GetUserId(username);
-                song.ArtistId = artistId;
+                var profile = await _profile.GetUserProfile(username);
+                song.UserProfileProfileId = profile.ProfileId;
+                song.UserId = artistId;
                 await db.Songs.AddAsync(song);
                 await Save();
             }
@@ -197,19 +214,20 @@ namespace MusicPlatform.Services
             }
           
         }
-        public async Task DeleteSong(Guid songId,string artistId)
+        public async Task DeleteSong(string artistId,string songName)
         {
             try
             {
-                if (songId == null)
+                if (songName == null)
                 {
-                    throw new NullReferenceException(nameof(songId));
+                    throw new NullReferenceException(nameof(songName));
                 }
-                var currentSong = await GetSong(artistId, songId);
+                var currentSong = await GetSong(artistId, songName);
                 if (currentSong == null)
                 {
                     throw new NullReferenceException(nameof(currentSong));
                 }
+                await blob.Delete(currentSong.SongUrl);
                 db.Songs.Remove(currentSong);
                 await Save();
             }
@@ -221,21 +239,21 @@ namespace MusicPlatform.Services
            
         }
 
-        public async Task<SongModel> GetSong(string artistId,Guid songId)
+        public async Task<SongModel> GetSong(string username,string songName)
         {
             try
             {
-                if (songId == null)
+                if (songName == null)
                 {
-                    throw new NullReferenceException(nameof(songId));
+                    throw new NullReferenceException(nameof(songName));
                 }
-                if (artistId == null)
+                if (username == null)
                 {
-                    throw new NullReferenceException(nameof(artistId));
+                    throw new NullReferenceException(nameof(username));
                 }
-                var currentSong = await db.Songs.Where(a => a.SongId == songId).Where(s => s.ArtistId == artistId).Include(s => s.User).FirstOrDefaultAsync();
-                currentSong.CreditModel = await GetCredit(songId);
-                currentSong.SongImage = await GetSongImage(songId);
+                var artistId = await userDetail.GetUserId(username);
+                var currentSong = await db.Songs.Where(a => a.SongName.ToLower() == songName.ToLower()).Where(s => s.UserId == artistId)
+                    .Include(s => s.User).Include(s=>s.SongImage).Include(s=>s.CreditModel).Include(s=>s.SongImage).FirstOrDefaultAsync();
                 return currentSong;
             }
             catch (Exception e)
@@ -261,26 +279,27 @@ namespace MusicPlatform.Services
             await db.SaveChangesAsync();
         }
 
-        public async Task UpdateSong(SongModel song, Guid songId,string artistId)
+        public async Task UpdateSong(SongModel song, string songName, string artistId)
         {
             try
             {
-                if (songId == null)
+                if (songName == null)
                 {
-                    throw new NullReferenceException(nameof(songId));
+                    throw new NullReferenceException(nameof(songName));
                 }
                 if (song == null)
                 {
                     throw new NullReferenceException(nameof(song));
                 }
-                var currentSong = await GetSong(artistId, songId);
+                var currentSong = await GetSong(artistId, songName);
                 if (currentSong == null)
                 {
                     throw new NullReferenceException(nameof(currentSong));
                 }
                 db.Entry(currentSong).State = EntityState.Detached;
-                song.ArtistId = artistId;
-                song.SongId = songId;
+                song.UserId = artistId;
+                song.SongId = currentSong.SongId;
+                await blob.Delete(currentSong.SongUrl);
                 db.Entry(song).State = EntityState.Modified;
             }
             catch (Exception e)
