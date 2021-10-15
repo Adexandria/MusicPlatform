@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 namespace MusicPlatform.Controllers
 {
     [Route("api/{username}/[controller]")]
+    [Authorize("BasicAuthentication")]
     [ApiController]
     public class SearchController : ControllerBase
     {
@@ -29,7 +30,7 @@ namespace MusicPlatform.Controllers
             this._song = _song;
         }
        
-        [Authorize("BasicAuthentication")]
+        
         [HttpGet("users/{name}")]
         public ActionResult<IEnumerable<UsersDTO>>SearchUser([FromRoute] string username,string name)
         {
@@ -92,7 +93,7 @@ namespace MusicPlatform.Controllers
 
                     }
                 } */
-        [Authorize("BasicAuthentication")]
+        //[Authorize("BasicAuthentication")]
         [HttpGet("artists/{artistname}")]
         public ActionResult<IEnumerable<ArtistsDTO>> SearchArtist([FromRoute] string username,string artistname)
         {
