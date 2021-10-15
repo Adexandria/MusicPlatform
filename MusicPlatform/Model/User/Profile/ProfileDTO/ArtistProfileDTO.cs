@@ -1,4 +1,6 @@
-﻿using MusicPlatform.Model.User.Profile.DTO;
+﻿using MusicPlatform.Model.Library;
+using MusicPlatform.Model.Library.DTO;
+using MusicPlatform.Model.User.Profile.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,6 @@ namespace MusicPlatform.Model.User.Profile.ProfileDTO
         public string ImageUrl { get; set; }
         public int Followers { get; set; }
         public int Following { get; set; }
-        public List<SongDTO> Songs { get; set; }
+        public List<SongsDTO> Songs { get; set; }
     }
 }
