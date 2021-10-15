@@ -20,9 +20,9 @@ namespace MusicPlatform.Profiles
             CreateMap<UserProfile, ArtistProfileDTO>().ForPath(s => s.Artistname, opt => opt.MapFrom(s => s.User.UserName))
                .ForMember(s => s.Followers, opt => opt.MapFrom(s => s.Followers.Count()))
                 .ForMember(s => s.Following, opt => opt.MapFrom(s => s.Followings.Count()))
-                .ForMember(s => s.Songs, opt => opt.MapFrom(s => s.Songs))
+                .ForPath(s => s.Songs, opt => opt.MapFrom(s => s.Songs))
                 .ForPath(s => s.ImageUrl, opt => opt.MapFrom(s => s.UserImage.ImageUrl));
-            
+                
             CreateMap<UserProfile, UserProfileDTO>().ForPath(s => s.Username, opt => opt.MapFrom(s => s.User.UserName))
                 .ForMember(s => s.Following, opt => opt.MapFrom(s => s.Followings.Count()))
                 .ForMember(s => s.Followers, opt => opt.MapFrom(s => s.Followers.Count()))
