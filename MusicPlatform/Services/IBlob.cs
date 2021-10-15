@@ -10,7 +10,7 @@ namespace Text_Speech.Services
         Task Upload(IFormFile model);
         Uri GetUri(string file);
 
-        Task DeleteImage(string url);
+        Task Delete(string url);
       //  Task UploadFile(FileStream file);
       
        // Task UploadStream(Stream model);

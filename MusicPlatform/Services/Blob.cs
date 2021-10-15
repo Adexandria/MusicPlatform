@@ -42,7 +42,7 @@ namespace Text_Speech.Services
             return blobClient;
         }
 
-        public async  Task DeleteImage(string url)
+        public async  Task Delete(string url)
         {
             var length = "https://deola.blob.core.windows.net/textimages/";
             var filename = url.Remove(0, length.Length);
