@@ -8,9 +8,10 @@ namespace MusicPlatform.Services
 {
     public interface ILibrary
     {
-        IEnumerable<SongModel> GetSongs { get; }
-        IEnumerable<SongModel> GetSong(string name);
-        Task<SongModel> GetSongById(Guid songId);
+        IEnumerable<SongLibrary> GetLibrary(string username);
+        IEnumerable<SongLibrary> GetSongLibrary(string username, string songName);
+        Task AddToLibrary(string username,Guid songId);
+        Task RemoveFromLibrary(string username, Guid songId);
 
     }
 }
