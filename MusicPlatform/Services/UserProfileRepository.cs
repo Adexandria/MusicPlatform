@@ -84,7 +84,7 @@ namespace MusicPlatform.Services
                     ProfileId = currentImage.ProfileId
                 };
                 db.Entry(userImage).State = EntityState.Modified;
-                await blob.DeleteImage(currentImage.ImageUrl);
+                await blob.Delete(currentImage.ImageUrl);
                 await Save();
                 return userImage;
             }
@@ -109,7 +109,7 @@ namespace MusicPlatform.Services
                     throw new NullReferenceException(nameof(currentimage));
                 }
                 db.UserImages.Remove(currentimage);
-                await blob.DeleteImage(currentimage.ImageUrl);
+                await blob.Delete(currentimage.ImageUrl);
                 await Save();
             }
             catch (Exception e)
@@ -287,7 +287,7 @@ namespace MusicPlatform.Services
         private IEnumerable<SongModel> GetArtistSongs(string stagename)
         {
             var artistId = userDetail.GetUserId(stagename).Result;
-            return db.Songs.Where(s => s.ArtistId == artistId).OrderByDescending(s => s.Download).Take(3).AsNoTracking();
+            return db.Songs.Where(s => s.UserId == artistId).Include(s=>s.SongImage).OrderByDescending(s => s.Download).Take(3).AsNoTracking();
         }
         private IEnumerable<FollowingModel> GetFollowers(string name)
         {
