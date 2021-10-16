@@ -49,7 +49,8 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(userId));
             }
-            return  db.Libraries.Where(s => s.UserId == userId).Include(s => s.Song);
+            return  db.Libraries.Where(s => s.UserId == userId).Include(s => s.Song).Include(s=>s.User)
+               .Include(s => s.Song.SongImage);
         }
 
        
@@ -85,7 +86,8 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(userId));
             }
-            return db.Libraries.Where(s => s.Song.SongName.StartsWith(songName)).Where(s=>s.UserId == userId).OrderBy(s => s.SongId).Include(s => s.Song);
+            return db.Libraries.Where(s => s.Song.SongName.StartsWith(songName)).Where(s=>s.UserId == userId).OrderBy(s => s.SongId).Include(s => s.Song)
+                .Include(s => s.User).Include(a=>a.Song.SongImage);
         }
         private async Task<SongLibrary> GetSongLibrary(string username,Guid songId)
         {
