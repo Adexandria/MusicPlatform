@@ -7,8 +7,10 @@ namespace MusicPlatform.Model.Library.DTO
 {
     public class UserLibraryDTO
     {
-        public string ArtistName { get; set; }
+      
+        public string Artist { get; set; }
         public string SongName { get; set; }
-
+        public string SongUrl { get; set; }
+        public string Imageurl { get; set; }
     }
 }
