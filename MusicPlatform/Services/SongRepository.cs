@@ -154,6 +154,7 @@ namespace MusicPlatform.Services
                     ImageUrl = url
                 };
                 db.Entry(image).State = EntityState.Modified;
+                await Save();
             }
             catch (Exception e)
             {
@@ -301,6 +302,7 @@ namespace MusicPlatform.Services
                 song.SongId = currentSong.SongId;
                 await blob.Delete(currentSong.SongUrl);
                 db.Entry(song).State = EntityState.Modified;
+                await Save();
             }
             catch (Exception e)
             {
@@ -308,6 +310,58 @@ namespace MusicPlatform.Services
                 throw e;
             }
         }
+        
+        public async Task DownloadSong(string artist,string songName)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(songName))
+                {
+                    throw new NullReferenceException(nameof(songName));
+                }
+                var currentSong = await GetSong(artist, songName);
+                if (currentSong == null)
+                {
+                    throw new NullReferenceException(nameof(currentSong));
+                }
+                db.Entry(currentSong).State = EntityState.Detached;
+                SongModel model = new SongModel()
+                {
+                    SongId = currentSong.SongId,
+                    UserId = currentSong.User.Id,
+                    SongName = currentSong.SongName,
+                    SongUrl = currentSong.SongUrl,
+                    UserProfileProfileId = currentSong.UserProfileProfileId,
+                    Download = currentSong.Download + 1
+                };
+                db.Entry(model).State = EntityState.Modified;
+                await Save();
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+           
+        }
+        public IEnumerable<SongModel> GetTrendingSong 
+        {
+            get
+            {
+                return db.Songs.OrderByDescending(s => s.Download).Take(5);
+            }
+        }
+
+        public IEnumerable<SongModel> GetNewSongs
+        {
+            get
+            {
+                return db.Songs.OrderBy(s => s.ReleasedDate).Take(5);
+            }
+        }
+
+
+
 
         private async Task<CreditModel> GetCredit(Guid songId)
         {
@@ -317,5 +371,7 @@ namespace MusicPlatform.Services
         {
             return await db.SongImages.Where(s => s.SongId == songId).FirstOrDefaultAsync();
         }
+
+       
     }
 }

@@ -24,6 +24,11 @@ namespace MusicPlatform.Services
         Task UpdateImage(string url, Guid songId);
         Task DeleteImage(Guid songId);
 
+        Task DownloadSong(string artist,string songName);
+
+
+        IEnumerable<SongModel> GetTrendingSong { get; }
+        IEnumerable<SongModel> GetNewSongs { get; }
         Task Save();
 
     }
