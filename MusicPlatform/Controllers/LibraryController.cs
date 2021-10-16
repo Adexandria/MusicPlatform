@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.Library;
+using MusicPlatform.Model.Library.DTO;
 using MusicPlatform.Services;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace MusicPlatform.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<SongLibrary>> GetUserLibrary(string username)
+        public ActionResult<IEnumerable<UserLibrariesDTO>> GetUserLibrary(string username)
         {
             var user = userDetail.GetUser(username).Result;
             if (user == null)
@@ -37,10 +38,11 @@ namespace MusicPlatform.Controllers
                 return NotFound("user not found");
             }
             var currentLibrary = _library.GetLibrary(username);
-            return Ok(currentLibrary);
+            var mappedLibrary = mapper.Map<IEnumerable<UserLibrariesDTO>>(currentLibrary);
+            return Ok(mappedLibrary);
         }
         [HttpGet("songs")]
-        public ActionResult<IEnumerable<SongLibrary>> SearchSongs(string username,string songName)
+        public ActionResult<IEnumerable<UserLibraryDTO>> SearchSongs(string username,string songName)
         {
             var user = userDetail.GetUser(username).Result;
             if (user == null)
@@ -52,9 +54,10 @@ namespace MusicPlatform.Controllers
             {
                 return NotFound();
             }
-            return Ok(currentSongs);
+            var mappedLibrary = mapper.Map<IEnumerable<UserLibraryDTO>>(currentSongs);
+            return Ok(mappedLibrary); 
         }
-        [HttpPost("{songId}")]
+        [HttpPost("{songName}")]
         public async Task<IActionResult> AddLibrary(string username,string songName)
         {
             var user = await userDetail.GetUser(username);
@@ -70,7 +73,7 @@ namespace MusicPlatform.Controllers
             await _library.AddToLibrary(username, currentSong.SongId);
             return Ok("Success");
         }
-        [HttpDelete("{songId}")]
+        [HttpDelete("{songName}")]
         public async Task<IActionResult> RemoveFromLibrary(string username, string songName)
         {
             var user = await userDetail.GetUser(username);
