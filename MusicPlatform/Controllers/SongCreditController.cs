@@ -1,17 +1,15 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.Library;
 using MusicPlatform.Model.Library.DTO;
 using MusicPlatform.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MusicPlatform.Controllers
 {
     [Route("api/{username}/{songName}/[controller]")]
+    [Authorize("BasicAuthentication", Roles = "Artist")]
     [ApiController]
     public class SongCreditController : ControllerBase
     {
@@ -31,7 +29,7 @@ namespace MusicPlatform.Controllers
             var currentUser = await userDetail.GetUser(username);
             if (currentUser == null)
             {
-                return NotFound("User not found");
+                return NotFound("Username not found");
             }
             var currentSong = await _song.GetSong(username, songName);
             if (currentSong == null)
@@ -49,7 +47,7 @@ namespace MusicPlatform.Controllers
             var currentUser = await userDetail.GetUser(username);
             if (currentUser == null)
             {
-                return NotFound("User not found");
+                return NotFound("Username not found");
             }
             var currentSong = await _song.GetSong(username, songName);
             if (currentSong == null)
@@ -67,7 +65,7 @@ namespace MusicPlatform.Controllers
             var currentUser = await userDetail.GetUser(username);
             if (currentUser == null)
             {
-                return NotFound("User not found");
+                return NotFound("Username not found");
             }
             var currentSong = await _song.GetSong(username, songName);
             if (currentSong == null)
