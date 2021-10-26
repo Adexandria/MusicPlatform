@@ -1,16 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using MusicPlatform.Model.User.Profile;
 using MusicPlatform.Model.User.Profile.ProfileDTO;
 using MusicPlatform.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using Text_Speech.Services;
 
@@ -62,7 +56,7 @@ namespace MusicPlatform.Controllers
 
         [Authorize("BasicAuthentication")]
         [HttpPost("image")]
-        public async Task<ActionResult> AddImage([FromRoute] string username, IFormFile image)
+        public async Task<IActionResult> AddImage([FromRoute] string username, IFormFile image)
         {
             try
             {
