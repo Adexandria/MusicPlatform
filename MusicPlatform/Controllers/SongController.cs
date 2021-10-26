@@ -6,43 +6,41 @@ using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.Library;
 using MusicPlatform.Model.Library.DTO;
 using MusicPlatform.Model.User;
-using MusicPlatform.Model.User.Profile.DTO;
 using MusicPlatform.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Text_Speech.Services;
 
 namespace MusicPlatform.Controllers
 {
     [Route("api/{username}/[controller]")]
-    [Authorize("BasicAuthentication")]
-    [Authorize(Roles = "Artist")]
+    [Authorize("BasicAuthentication",Roles ="Artist")]
+    
     [ApiController]
     public class SongController : ControllerBase
     {
         private readonly IBlob _blob;
         private readonly ISong _song;
+        private readonly UserManager<UserModel> _userManager;
         private readonly IMapper mapper;
         private readonly IUser userDetail;
-        public SongController(IBlob _blob, IMapper mapper, IUser userDetail, ISong _song)
+        public SongController(IBlob _blob, IMapper mapper, IUser userDetail, ISong _song, UserManager<UserModel> _userManager)
         {
             this._blob = _blob;
             this.mapper = mapper;
             this.userDetail = userDetail;
             this._song = _song;
+            this._userManager = _userManager;
         }
 
         [HttpPost]
         public async Task<IActionResult> UploadSong(string username,[FromForm]SongCreate newSong)
         {
+            
             var currentUser = await userDetail.GetUser(username);
             if (currentUser == null)
             {
-                return NotFound("User not found");
+                return NotFound("Username not found");
             }
-
             await _blob.Upload(newSong.Song);
             string url = _blob.GetUri(newSong.Song.FileName).ToString();
             var mappedSong = mapper.Map<SongModel>(newSong);
@@ -57,7 +55,7 @@ namespace MusicPlatform.Controllers
             var currentUser = await userDetail.GetUser(username);
             if (currentUser == null)
             {
-                return NotFound("User not found");
+                return NotFound("Username not found");
             }
             var currentSong = await _song.GetSong(username, songName);
             if (currentSong == null)
@@ -78,7 +76,7 @@ namespace MusicPlatform.Controllers
             var currentUser = await userDetail.GetUser(username);
             if (currentUser == null)
             {
-                return NotFound("User not found");
+                return NotFound("Username not found");
             }
             var currentSong = await _song.GetSong(username, songName);
             if (currentSong == null)
@@ -96,7 +94,7 @@ namespace MusicPlatform.Controllers
             var currentUser = await userDetail.GetUser(username);
             if (currentUser == null)
             {
-                return NotFound("User not found");
+                return NotFound("Username not found");
             }
             var currentSong = await _song.GetSong(username, songName);
             if(currentSong == null)
@@ -105,7 +103,6 @@ namespace MusicPlatform.Controllers
             }
             await _blob.Upload(image);
             string url = _blob.GetUri(image.FileName).ToString();
-            
             await _song.AddImage(url,currentSong.SongId);
             return Ok("Success");
         }
@@ -115,7 +112,7 @@ namespace MusicPlatform.Controllers
             var currentUser = await userDetail.GetUser(username);
             if (currentUser == null)
             {
-                return NotFound("User not found");
+                return NotFound("Username not found");
             }
             var currentSong = await _song.GetSong(username, songName);
             if (currentSong == null)
@@ -134,12 +131,12 @@ namespace MusicPlatform.Controllers
             var currentUser = await userDetail.GetUser(username);
             if (currentUser == null)
             {
-                return NotFound("User not found");
+                return NotFound("Username not found");
             }
             var currentSong = await _song.GetSong(username, songName);
             if (currentSong == null)
             {
-                return NotFound("Sog doesn't exist");
+                return NotFound("Song doesn't exist");
             }
             await _song.DeleteImage(currentSong.SongId);
             return Ok("Success");
