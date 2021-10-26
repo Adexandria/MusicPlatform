@@ -15,7 +15,7 @@
              <returns>A string status</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.AccountController.SignUpArtist(MusicPlatform.Model.User.SignUpDTO.SignUpArtist)">
-            <param name="newUser">
+            <param name="newArtist">
             an object to sign up a user
             </param>
              <summary>
@@ -38,7 +38,7 @@
              <returns>A string status</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.AccountController.Login(MusicPlatform.Model.User.Login.Login)">
-            <param name="model">
+            <param name="user">
             an object to login
             </param>
              <summary>
