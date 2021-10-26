@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MusicPlatform.Model.User;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -16,16 +17,18 @@ namespace MusicPlatform.Services
     {
         readonly UserManager<UserModel> userManager;
         private readonly IPasswordHasher<UserModel> passwordHasher;
+        private readonly IUserClaimsPrincipalFactory<UserModel> principalFactory;
         public BasicAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            ISystemClock clock, UserManager<UserModel> userManager, IPasswordHasher<UserModel> passwordHasher
+            ISystemClock clock, UserManager<UserModel> userManager, IUserClaimsPrincipalFactory<UserModel> principalFactory, IPasswordHasher<UserModel> passwordHasher
             )
     : base(options, logger, encoder, clock)
         {
             this.userManager = userManager;
             this.passwordHasher = passwordHasher;
+            this.principalFactory = principalFactory;
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -54,7 +57,7 @@ namespace MusicPlatform.Services
 
 
 
-            var currentUser = userManager.FindByNameAsync(authUsername).Result;
+            var currentUser = userManager.FindByNameAsync(authUsername).Result; 
             if(currentUser != null)
             {
                 var isVerify = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, authPassword);
@@ -63,13 +66,14 @@ namespace MusicPlatform.Services
                 {
                 return Task.FromResult(AuthenticateResult.Fail("The username or password is not correct."));
                 }
-                var authenticatedUser = new AuthenticatedUser("BasicAuthentication", true, currentUser.UserName);
-                var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(authenticatedUser));
-
-                return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
+               
+                var claimsPrincipal = principalFactory.CreateAsync(currentUser).Result;
+                AuthenticationTicket ticket = new AuthenticationTicket(claimsPrincipal,"BasicAuthentication");
+                return Task.FromResult(AuthenticateResult.Success(ticket));
             }
 
             return Task.FromResult(AuthenticateResult.Fail("Unauthorized"));
         }
+      
     }
 }
