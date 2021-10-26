@@ -1,16 +1,18 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using MusicPlatform.Model.User;
-using MusicPlatform.Model.User.Login;
-using MusicPlatform.Model.User.SignUpDTO;
-using MusicPlatform.Services;
-using System;
-using System.Security.Claims;
+﻿using System;
+using AutoMapper;
 using System.Text;
 using System.Threading.Tasks;
+using MusicPlatform.Services;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
+using MusicPlatform.Model.User;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using MusicPlatform.Model.User.Login;
+using MusicPlatform.Model.User.SignUpDTO;
+using Microsoft.AspNetCore.Authorization;
+
+
 
 namespace MusicPlatform.Controllers
 {
@@ -19,10 +21,11 @@ namespace MusicPlatform.Controllers
     public class AccountController : ControllerBase
     {
         readonly UserManager<UserModel> userManager;
-        private readonly IPasswordHasher<UserModel> passwordHasher;
-        private readonly SignInManager<UserModel> signInManager;
-        private readonly IMapper mapper;
-        private readonly IUserProfile _profile;
+        readonly IPasswordHasher<UserModel> passwordHasher;
+        readonly SignInManager<UserModel> signInManager;
+        readonly IMapper mapper;
+        readonly IUserProfile _profile;
+        
 
         public AccountController(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, IMapper mapper, IPasswordHasher<UserModel> passwordHasher, IUserProfile _profile)
         {
@@ -32,6 +35,7 @@ namespace MusicPlatform.Controllers
             this.signInManager = signInManager;
             this._profile = _profile;
         }
+
 
         ///<param name="newUser">
         ///an object to sign up a user
@@ -79,7 +83,9 @@ namespace MusicPlatform.Controllers
             }
 
         }
-        ///<param name="newUser">
+
+
+        ///<param name="newArtist">
         ///an object to sign up a user
         ///</param>
         /// <summary>
@@ -96,14 +102,14 @@ namespace MusicPlatform.Controllers
         [AllowAnonymous]
         [Produces("application/json")]
         [HttpPost("signup/artist")]
-        public async Task<ActionResult> SignUpArtist(SignUpArtist newUser)
+        public async Task<ActionResult> SignUpArtist(SignUpArtist newArtist)
         {
             try
             {
-                var signupUser = mapper.Map<UserModel>(newUser);
-                if (newUser.Password.Equals(newUser.RetypePassword))
+                var signupUser = mapper.Map<UserModel>(newArtist);
+                if (newArtist.Password.Equals(newArtist.RetypePassword))
                 {
-                     signupUser.Verified = true; 
+                    signupUser.Verified = true; 
                     IdentityResult identity = await userManager.CreateAsync(signupUser, signupUser.PasswordHash);
 
                     if (identity.Succeeded)
@@ -127,6 +133,8 @@ namespace MusicPlatform.Controllers
             }
 
         }
+
+
         ///<param name="username">
         ///\a user's username
         ///</param>
@@ -166,7 +174,8 @@ namespace MusicPlatform.Controllers
             }
 
         }
-        ///<param name="model">
+
+        ///<param name="user">
         ///an object to login
         ///</param>
         /// <summary>
@@ -182,20 +191,24 @@ namespace MusicPlatform.Controllers
         [AllowAnonymous]
         [Produces("application/json")]
         [HttpPost("login")]
-        public async Task<ActionResult> Login(Login model)
+        public async Task<ActionResult> Login(Login user)
         {
             try
             {
                 
-                var logindetails = mapper.Map<UserModel>(model);
+                var logindetails = mapper.Map<UserModel>(user);
                 var currentUser = await userManager.FindByNameAsync(logindetails.UserName);
-                if (currentUser == null) return NotFound("Username doesn't exist");
+                if (currentUser == null) 
+                { 
+                    return NotFound("Username doesn't exist");
+                }
+
                 //This verfies the user password by using IPasswordHasher interface
-                var passwordVerifyResult = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, model.Password);
+                var passwordVerifyResult = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, user.Password);
                 if (passwordVerifyResult.ToString() == "Success")
                 {
-                    await signInManager.PasswordSignInAsync(currentUser.UserName, model.Password, false, false);
-                    var bearertoken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{currentUser.UserName}:{model.Password}"));
+                    await signInManager.PasswordSignInAsync(currentUser.UserName, currentUser.PasswordHash, false, false);
+                    var bearertoken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{currentUser.UserName}:{user.Password}"));
                     return Ok($"bearer:{bearertoken}");
                 }
 
@@ -209,6 +222,33 @@ namespace MusicPlatform.Controllers
 
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize("BasicAuthentication")]
+        [Produces("application/json")]
+        [HttpGet("{username}/signout")]
+        public async Task<ActionResult> SignOut(string username)
+        {
+            try
+            {
+                var currentUser = await userManager.FindByNameAsync(username);
+                if (currentUser == null)
+                {
+                    return NotFound("Username doesn't exist");
+                }
+                if (signInManager.IsSignedIn(this.User))
+                {
+                    await signInManager.SignOutAsync();
+                    return Ok("Signed out");
+                }
+                return BadRequest("This user isn't signed in");
+            }
+            catch ( Exception e)
+            {
+
+               return BadRequest(e.Message);
+            }
+        }
         [NonAction]
         private async Task<string> EmailConfirmationToken(UserModel newUser)
         {
