@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using MusicPlatform.Model.Library.DTO;
 using MusicPlatform.Model.User.Profile.DTO;
 using MusicPlatform.Services;
@@ -11,6 +12,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Text_Speech.Services;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Identity;
+using MusicPlatform.Model.User;
 
 namespace MusicPlatform.Controllers
 {
@@ -22,13 +26,15 @@ namespace MusicPlatform.Controllers
         private readonly ISong _song;
         private readonly IBlob _blob;
         private readonly IMapper mapper;
-        private readonly IUser userDetail;
-        public SongsController(ISong _song,IMapper mapper, IUser userDetail, IBlob _blob)
+        private readonly SignInManager<UserModel> manager;
+       private readonly Authenticate authenticate;
+        public SongsController(ISong _song,IMapper mapper, Authenticate authenticate, SignInManager<UserModel> manager, IBlob _blob)
         {
             this._song = _song;
             this.mapper = mapper;
-            this.userDetail = userDetail;
+            this.manager = manager; 
             this._blob = _blob;
+            this.authenticate = authenticate;
         }
 
         [HttpGet]
@@ -52,10 +58,9 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await userDetail.GetUser(artist);
-                if (currentUser == null)
+                if(Request.Cookies["Download"] == null)
                 {
-                    return NotFound("User not found");
+                    Response.Cookies.Append("Download", "4");
                 }
 
                 var song = await _song.GetSong(artist,songName);
@@ -78,10 +83,10 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await userDetail.GetUser(artist);
-                if (currentUser == null)
+                var isSigned = IsSignedIn();
+                if (!isSigned)
                 {
-                    return NotFound("User not found");
+                    return BadRequest("You reached your limit, sign in");
                 }
 
                 var song = await _song.GetSong(artist, songName);
@@ -94,7 +99,6 @@ namespace MusicPlatform.Controllers
                 var file = await _blob.DownloadFile(song.SongUrl);
                 return File(file.Value.Content, "audio/mpeg", songName);
 
-
             }
             catch (Exception e)
             {
@@ -102,6 +106,43 @@ namespace MusicPlatform.Controllers
                 return BadRequest(e.Message);
             }
 
+        }
+        [NonAction]
+        public HttpResponseMessage Get()
+        {
+            var resp = new HttpResponseMessage();
+
+            var cookie = new CookieHeaderValue("download-no", "4");
+
+            resp.Headers.Add("Cookie", $"{cookie}");
+            return resp;
+        }
+        [NonAction]
+        public bool IsFree()
+        {
+            var x = Request.Cookies["Download"];
+            var y = Convert.ToInt32(x);
+            if (y == 0)
+            {
+                return false;
+            }
+           var value = (y - 1).ToString();
+           Response.Cookies.Append("Download", value);  
+           return true;
+        }
+        [NonAction]
+        public bool IsSignedIn()
+        {
+            if (!this.User.Identity.IsAuthenticated)
+            {
+                return IsFree();
+            }
+            else
+            {
+                var valueHeader = Request.Headers["Authorization"].ToString();
+                var repsonse = authenticate.AuthenticateUser(valueHeader).Result;
+            }
+            return true;
         }
     }
 }
