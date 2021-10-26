@@ -14,7 +14,6 @@ namespace MusicPlatform.Controllers
 {
     [Route("api/{username}/[controller]")]
     [Authorize("BasicAuthentication",Roles ="Artist")]
-    
     [ApiController]
     public class SongController : ControllerBase
     {
