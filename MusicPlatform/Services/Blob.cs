@@ -2,7 +2,6 @@
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Text_Speech.Services
@@ -38,8 +37,8 @@ namespace Text_Speech.Services
         {
             var blobContainer = _blobServiceClient.GetBlobContainerClient(Container);
             var blobClient = blobContainer.GetBlobClient(name);
-            
-            return blobClient;
+                return blobClient;
+           
         }
 
         public async  Task Delete(string url)
@@ -57,8 +56,7 @@ namespace Text_Speech.Services
             var blobclient = GetBlobServiceClient(filename);
             if (await blobclient.ExistsAsync())
             {
-                var a = await blobclient.DownloadAsync();
-                return a;
+                return await blobclient.DownloadAsync();
             }
             throw new NullReferenceException(nameof(blobclient));
 
