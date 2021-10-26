@@ -24,6 +24,7 @@ using Text_Speech.Services;
 using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
 using Microsoft.Extensions.Azure;
+using Azure.Storage.Queues;
 
 namespace MusicPlatform
 {
@@ -35,7 +36,7 @@ namespace MusicPlatform
         }
 
         public IConfiguration Configuration { get; }
-
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -50,6 +51,7 @@ namespace MusicPlatform
             services.AddScoped<IUserProfile, UserProfileRepository>();
             services.AddScoped<ISong, SongRepository>();
             services.AddScoped<IBlob, Blob>();
+            services.AddScoped<Authenticate>();
             services.AddScoped<ILibrary, LibraryRepository>();
             services.AddDbContext<IdentityDb>(opts =>
             {
@@ -118,14 +120,15 @@ namespace MusicPlatform
 
                 });
             });
-           
+
             services.AddIdentity<UserModel, IdentityRole>().AddEntityFrameworkStores<IdentityDb>().AddSignInManager().AddDefaultTokenProviders();
             services.ConfigureApplicationCookie(options =>
             {
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
-               // options.Cookie.Expiration = new TimeSpan(1,10,10,100);
-                options.LoginPath = PathString.Empty;
+                options.Cookie.Name = "DownloadMusic";
+                options.ExpireTimeSpan = new TimeSpan(1, 0, 0, 0);
+                options.LoginPath = PathString.Empty;   
                 options.AccessDeniedPath = PathString.Empty;
 
             });
@@ -143,7 +146,6 @@ namespace MusicPlatform
             {
                 builder.AddBlobServiceClient(Configuration["ConnectionStrings:AzureBlobStorage:blob"], preferMsi: true);
             });
-
         }
 
 
@@ -174,7 +176,32 @@ namespace MusicPlatform
             
          }
         }
+    internal static class StartupExtensions
+    {
+        public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
+        {
+            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
+            {
+                return builder.AddBlobServiceClient(serviceUri);
+            }
+            else
+            {
+                return builder.AddBlobServiceClient(serviceUriOrConnectionString);
+            }
+        }
+        public static IAzureClientBuilder<QueueServiceClient, QueueClientOptions> AddQueueServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
+        {
+            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
+            {
+                return builder.AddQueueServiceClient(serviceUri);
+            }
+            else
+            {
+                return builder.AddQueueServiceClient(serviceUriOrConnectionString);
+            }
+        }
     }
+}
     internal static class StartupExtensions
     {
         public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
