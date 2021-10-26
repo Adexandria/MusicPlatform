@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace MusicPlatform.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize("BasicAuthentication")]
     [ApiController]
     public class SettingsController : ControllerBase
     {
