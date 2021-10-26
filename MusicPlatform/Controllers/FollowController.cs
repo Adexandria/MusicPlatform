@@ -1,11 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MusicPlatform.Controllers
@@ -25,44 +21,64 @@ namespace MusicPlatform.Controllers
         [HttpPost("{follower}")]
         public async Task<ActionResult> FollowArtist([FromRoute] string username, string follower)
         {
-            var currentUser = await userDetail.GetUser(username);
-            if (currentUser == null)
+
+            try
             {
-                return NotFound("User not found");
+                var currentUser = await userDetail.GetUser(username);
+                if (currentUser == null)
+                {
+                    return NotFound("User not found");
+                }
+                var currentFollower = await userDetail.GetUser(follower);
+                if (currentFollower == null)
+                {
+                    return NotFound("artist not found");
+                }
+                if (await _profile.IsFollowing(currentUser.Id, currentFollower.Id))
+                {
+                    return BadRequest("This User is being followed by you");
+                }
+                await _profile.Follow(username, follower);
+                return Ok($"Following {follower}");
             }
-            var currentFollower = await userDetail.GetUser(follower);
-            if (currentFollower == null)
+            catch (Exception e)
             {
-                return NotFound("artist not found");
+                return BadRequest(e.Message);
+
             }
-            if (await _profile.IsFollowing(currentUser.Id, currentFollower.Id))
-            {
-                return BadRequest("This User is being followed by you");
-            }
-            await _profile.Follow(username, follower);
-            return Ok($"Following {follower}");
+            
         }
 
 
         [HttpDelete("{follower}")]
         public async Task<ActionResult> UnFollowArtist([FromRoute] string username, string follower)
         {
-            var currentUser = await userDetail.GetUser(username);
-            if (currentUser == null)
+
+            try
             {
-                return NotFound("User not found");
+                var currentUser = await userDetail.GetUser(username);
+                if (currentUser == null)
+                {
+                    return NotFound("User not found");
+                }
+                var currentFollower = await userDetail.GetUser(follower);
+                if (currentFollower == null)
+                {
+                    return NotFound("artist not found");
+                }
+                if (await _profile.IsFollowing(currentUser.Id, currentFollower.Id))
+                {
+                    await _profile.UnFollow(currentUser.Id, currentFollower.Id);
+                    return Ok($"Unfollowing {follower}");
+                }
+                return BadRequest("Unsuccessful, the follower isn't being followed ");
             }
-            var currentFollower = await userDetail.GetUser(follower);
-            if (currentFollower == null)
+            catch (Exception e)
             {
-                return NotFound("artist not found");
+                return BadRequest(e.Message);
+
             }
-            if (await _profile.IsFollowing(currentUser.Id, currentFollower.Id))
-            {
-                await _profile.UnFollow(currentUser.Id, currentFollower.Id);
-                return Ok($"Unfollowing {follower}");
-            }
-            return BadRequest("Unsuccessful, the follower isn't being followed ");
+            
         }
     }
 }
