@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MusicPlatform.Model.Library;
 using MusicPlatform.Model.Library.DTO;
 using MusicPlatform.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MusicPlatform.Controllers
@@ -32,62 +29,101 @@ namespace MusicPlatform.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<UserLibrariesDTO>> GetUserLibrary(string username)
         {
-            var user = userDetail.GetUser(username).Result;
-            if (user == null)
+
+            try
             {
-                return NotFound("user not found");
+                var user = userDetail.GetUser(username).Result;
+                if (user == null)
+                {
+                    return NotFound("user not found");
+                }
+                var currentLibrary = _library.GetLibrary(username);
+                var mappedLibrary = mapper.Map<IEnumerable<UserLibrariesDTO>>(currentLibrary);
+                return Ok(mappedLibrary);
             }
-            var currentLibrary = _library.GetLibrary(username);
-            var mappedLibrary = mapper.Map<IEnumerable<UserLibrariesDTO>>(currentLibrary);
-            return Ok(mappedLibrary);
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+
+            }
+           
         }
         [HttpGet("songs")]
         public ActionResult<IEnumerable<UserLibraryDTO>> SearchSongs(string username,string songName)
         {
-            var user = userDetail.GetUser(username).Result;
-            if (user == null)
+
+            try
             {
-                return NotFound("user not found");
+                var user = userDetail.GetUser(username).Result;
+                if (user == null)
+                {
+                    return NotFound("user not found");
+                }
+                var currentSongs = _library.GetSongLibrary(username, songName);
+                if (currentSongs == null)
+                {
+                    return NotFound();
+                }
+                var mappedLibrary = mapper.Map<IEnumerable<UserLibraryDTO>>(currentSongs);
+                return Ok(mappedLibrary);
             }
-            var currentSongs = _library.GetSongLibrary(username, songName);
-            if(currentSongs == null)
+            catch (Exception e)
             {
-                return NotFound();
+                return BadRequest(e.Message);
+
             }
-            var mappedLibrary = mapper.Map<IEnumerable<UserLibraryDTO>>(currentSongs);
-            return Ok(mappedLibrary); 
+            
         }
         [HttpPost("{songName}")]
         public async Task<IActionResult> AddLibrary(string username,string songName)
         {
-            var user = await userDetail.GetUser(username);
-            if (user == null)
+            try
             {
-                return NotFound("user not found");
+                var user = await userDetail.GetUser(username);
+                if (user == null)
+                {
+                    return NotFound("user not found");
+                }
+                var currentSong = await _song.GetSong(username, songName);
+                if (currentSong == null)
+                {
+                    return NotFound();
+                }
+                await _library.AddToLibrary(username, currentSong.SongId);
+                return Ok("Success");
             }
-            var currentSong = await _song.GetSong(username, songName);
-            if(currentSong == null)
+            catch (Exception e)
             {
-                return NotFound();
+                return BadRequest(e.Message);
+
             }
-            await _library.AddToLibrary(username, currentSong.SongId);
-            return Ok("Success");
+            
         }
         [HttpDelete("{songName}")]
         public async Task<IActionResult> RemoveFromLibrary(string username, string songName)
         {
-            var user = await userDetail.GetUser(username);
-            if (user == null)
+
+            try
             {
-                return NotFound("user not found");
+                var user = await userDetail.GetUser(username);
+                if (user == null)
+                {
+                    return NotFound("user not found");
+                }
+                var currentSong = await _song.GetSong(username, songName);
+                if (currentSong == null)
+                {
+                    return NotFound();
+                }
+                await _library.RemoveFromLibrary(username, currentSong.SongId);
+                return Ok("Success");
             }
-            var currentSong = await _song.GetSong(username, songName);
-            if (currentSong == null)
+            catch (Exception e)
             {
-                return NotFound();
+                return BadRequest(e.Message);
+
             }
-            await _library.RemoveFromLibrary(username, currentSong.SongId);
-            return Ok("Success");
+           
         }
     }
 }
