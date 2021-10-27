@@ -42,8 +42,8 @@ namespace MusicPlatform.Controllers
                 {
                     return NotFound("Username not found");
                 }
-                await _blob.Upload(newSong.Song);
-                string url = _blob.GetUri(newSong.Song.FileName).ToString();
+                await _blob.Upload(newSong.Song,newSong.SongName);
+                string url = _blob.GetUri(newSong.SongName);
                 var mappedSong = mapper.Map<SongModel>(newSong);
                 mappedSong.SongUrl = url;
                 await _song.AddSong(mappedSong, username);
@@ -72,7 +72,7 @@ namespace MusicPlatform.Controllers
                 {
                     return NotFound();
                 }
-                await _blob.Upload(updatedSong.Song);
+                await _blob.Upload(updatedSong.Song,songName);
                 string url = _blob.GetUri(updatedSong.Song.FileName).ToString();
                 var mappedSong = mapper.Map<SongModel>(updatedSong);
                 mappedSong.SongUrl = url;
@@ -129,7 +129,7 @@ namespace MusicPlatform.Controllers
                 {
                     return NotFound("Song doesn't exist");
                 }
-                await _blob.Upload(image);
+                await _blob.Upload(image,image.FileName);
                 string url = _blob.GetUri(image.FileName).ToString();
                 await _song.AddImage(url, currentSong.SongId);
                 return Ok("Success");
@@ -156,7 +156,7 @@ namespace MusicPlatform.Controllers
                 {
                     return NotFound("Song doesn't exist");
                 }
-                await _blob.Upload(image);
+                await _blob.Upload(image,image.FileName);
                 string url = _blob.GetUri(image.FileName).ToString();
                 await _song.UpdateImage(url, currentSong.SongId);
                 return Ok("Success");
