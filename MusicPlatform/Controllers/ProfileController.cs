@@ -70,7 +70,7 @@ namespace MusicPlatform.Controllers
                     return NotFound("Image not found");
                 }
 
-                await _blob.Upload(image);
+                await _blob.Upload(image,image.FileName);
                 string url = _blob.GetUri(image.FileName).ToString();
                 await _profile.AddImage(username, url);
                 return Ok("Successful");
@@ -99,7 +99,7 @@ namespace MusicPlatform.Controllers
                     return NotFound("Image not found");
                 }
 
-                await _blob.Upload(image);
+                await _blob.Upload(image,image.FileName);
                 string url = _blob.GetUri(image.FileName).ToString();
                 await _profile.UpdateUserImage(url, username);
                 return Ok("Successful");
