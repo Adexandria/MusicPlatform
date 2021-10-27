@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using MusicPlatform.Model.Library.DTO;
@@ -8,11 +7,9 @@ using MusicPlatform.Model.User.Profile.DTO;
 using MusicPlatform.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Text_Speech.Services;
-using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Identity;
 using MusicPlatform.Model.User;
 
@@ -26,15 +23,11 @@ namespace MusicPlatform.Controllers
         private readonly ISong _song;
         private readonly IBlob _blob;
         private readonly IMapper mapper;
-        private readonly SignInManager<UserModel> manager;
-       private readonly Authenticate authenticate;
-        public SongsController(ISong _song,IMapper mapper, Authenticate authenticate, SignInManager<UserModel> manager, IBlob _blob)
+        public SongsController(ISong _song,IMapper mapper, IBlob _blob)
         {
             this._song = _song;
             this.mapper = mapper;
-            this.manager = manager; 
             this._blob = _blob;
-            this.authenticate = authenticate;
         }
 
         [HttpGet]
@@ -108,16 +101,6 @@ namespace MusicPlatform.Controllers
 
         }
         [NonAction]
-        public HttpResponseMessage Get()
-        {
-            var resp = new HttpResponseMessage();
-
-            var cookie = new CookieHeaderValue("download-no", "4");
-
-            resp.Headers.Add("Cookie", $"{cookie}");
-            return resp;
-        }
-        [NonAction]
         public bool IsFree()
         {
             var x = Request.Cookies["Download"];
@@ -130,17 +113,13 @@ namespace MusicPlatform.Controllers
            Response.Cookies.Append("Download", value);  
            return true;
         }
+
         [NonAction]
         public bool IsSignedIn()
         {
             if (!this.User.Identity.IsAuthenticated)
             {
                 return IsFree();
-            }
-            else
-            {
-                var valueHeader = Request.Headers["Authorization"].ToString();
-                var repsonse = authenticate.AuthenticateUser(valueHeader).Result;
             }
             return true;
         }
