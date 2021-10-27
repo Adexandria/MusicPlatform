@@ -1,17 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using MusicPlatform.Model.Library.DTO;
 using MusicPlatform.Model.User.Profile.DTO;
 using MusicPlatform.Services;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Text_Speech.Services;
-using Microsoft.AspNetCore.Identity;
-using MusicPlatform.Model.User;
 
 namespace MusicPlatform.Controllers
 {

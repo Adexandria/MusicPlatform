@@ -4,21 +4,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MusicPlatform.Model.User;
 using MusicPlatform.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Text_Speech.Services;
 using Azure.Storage.Blobs;
@@ -51,7 +44,6 @@ namespace MusicPlatform
             services.AddScoped<IUserProfile, UserProfileRepository>();
             services.AddScoped<ISong, SongRepository>();
             services.AddScoped<IBlob, Blob>();
-            services.AddScoped<Authenticate>();
             services.AddScoped<ILibrary, LibraryRepository>();
             services.AddDbContext<IdentityDb>(opts =>
             {

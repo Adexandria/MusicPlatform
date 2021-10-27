@@ -19,7 +19,7 @@ namespace MusicPlatform.Services
             this.db = db ?? throw new NullReferenceException(nameof(db));
             this.userDetail = userDetail ?? throw new NullReferenceException(nameof(userDetail));
             this._profile = _profile ?? throw new NullReferenceException(nameof(_profile));
-            this.blob = blob;
+            this.blob = blob ?? throw new NullReferenceException(nameof(blob));
         }
 
         //Credit Repository
@@ -331,6 +331,7 @@ namespace MusicPlatform.Services
                     UserId = currentSong.User.Id,
                     SongName = currentSong.SongName,
                     SongUrl = currentSong.SongUrl,
+                    ReleasedDate = currentSong.ReleasedDate,
                     UserProfileProfileId = currentSong.UserProfileProfileId,
                     Download = currentSong.Download + 1
                 };
