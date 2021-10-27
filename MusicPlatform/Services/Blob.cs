@@ -1,5 +1,6 @@
 ﻿using Azure;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
@@ -15,23 +16,26 @@ namespace Text_Speech.Services
             _blobServiceClient = blobServiceClient;
         }
 
-        public async Task Upload(IFormFile model)
+        public async Task UploadSong(IFormFile model,string fileName)
         {
             
-            var blobClient = GetBlobServiceClient(model.FileName);
+            var blobClient = GetBlobServiceClient(fileName);
             await blobClient.UploadAsync(model.OpenReadStream(), overwrite: true);
 
         }
-        public Uri GetUri(string file) 
+        public string GetUri(string file) 
         {
             var blobClient = GetBlobServiceClient(file);
             if (blobClient.ExistsAsync().Result)
             {
-                return blobClient.Uri;
-                
+                return blobClient.Uri.AbsoluteUri;
             }
-            
             return null;
+        }
+        public async Task UploadImage(IFormFile model)
+        {
+            var blobClient = GetBlobServiceClient(model.FileName);
+            await blobClient.UploadAsync(model.OpenReadStream(), overwrite: true);
         }
         private BlobClient GetBlobServiceClient(string name)
         {
@@ -49,7 +53,7 @@ namespace Text_Speech.Services
             await blobclient.DeleteIfExistsAsync();
         }
 
-        public async Task<Response<Azure.Storage.Blobs.Models.BlobDownloadInfo>> DownloadFile(string url)
+        public async Task<Response<BlobDownloadInfo>> DownloadFile(string url)
         {
             var length = "https://deola.blob.core.windows.net/textimages/";
             var filename = url.Remove(0, length.Length);
@@ -62,21 +66,7 @@ namespace Text_Speech.Services
 
         }
 
-
-
-        /*  public async Task UploadFile(FileStream file)
-          {
-              var blobClient = GetBlobServiceClient("Document.Docx");
-              await blobClient.UploadAsync(file, overwrite: true);
-
-          }*/
-
-        /*   public async Task UploadStream(Stream model)
-           {
-               var blobClient = GetBlobServiceClient("Audio.mp3");
-               await blobClient.UploadAsync(model,overwrite:true);    
-
-           }*/
+      
     }
 }
 
