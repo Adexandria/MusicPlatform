@@ -16,5 +16,6 @@ namespace MusicPlatform.Services
         public bool IsAuthenticated { get; }
 
         public string Name { get; }
+
     }
 }
