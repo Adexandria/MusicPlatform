@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "MusicPlatform"
+    },
+    "storage1": {
+      "type": "storage",
+      "connectionId": "AzureBlobStorage"
+    }
+  }
+}

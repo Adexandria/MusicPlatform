@@ -1,0 +1,336 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MusicPlatform</name>
+    </assembly>
+    <members>
+        <member name="M:MusicPlatform.Controllers.AccountController.SignUp(MusicPlatform.Model.User.SignUpDTO.SignUpUser)">
+            <param name="newUser">
+            an object to sign up a user
+            </param>
+             <summary>
+             Sign up a new user
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.AccountController.SignUpArtist(MusicPlatform.Model.User.SignUpDTO.SignUpArtist)">
+            <param name="newArtist">
+            an object to sign up a user
+            </param>
+             <summary>
+             Sign up a new user
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.AccountController.VerifyEmailToken(MusicPlatform.Model.User.Token,System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="token">
+            a token to confirm user's email
+            </param>
+             <summary>
+            email confrimation
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.AccountController.Login(MusicPlatform.Model.User.Login.Login)">
+            <param name="user">
+            an object to login
+            </param>
+             <summary>
+            Login User
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.FollowController.Follow(System.String,System.String)">
+            <param name="username">
+            an string object 
+            </param>
+            <param name="follower">
+             a string object
+            </param>
+             <summary>
+             Follow user
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.FollowController.UnFollow(System.String,System.String)">
+            <param name="username">
+            an strig object 
+            </param>
+            <param name="follower">
+             a string object
+            </param>
+             <summary>
+             Unfollow user
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.LibraryController.GetUserLibrary(System.String)">
+            <param name="username">
+            an string object 
+            </param>
+             <summary>
+             Get User Library
+             </summary>
+             
+             <returns>returns UserLibraries Objects </returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.LibraryController.SearchSongs(System.String,System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             a string object that holds the song name
+            </param>
+             <summary>
+            Search Songs
+             </summary>
+             
+             <returns>User Library objects</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.LibraryController.AddLibrary(System.String,System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             a string object that holds the song name
+            </param>
+             <summary>
+             Add library
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.LibraryController.RemoveFromLibrary(System.String,System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             a string object that holds the song name
+            </param>
+             <summary>
+             Remove Song From library
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.NewSongsController.GetTrendingSongs">
+            <summary>
+            Get Trending Songs
+            </summary>
+            
+            <returns>return songsDTO Objects</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.ProfileController.GetUserProfile(System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+             <summary>
+             Get User Profile
+             </summary>
+             
+             <returns>UserProfile Object</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.ProfileController.AddUserImage(System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="image">
+             a FormFile that holds the image
+            </param>
+             <summary>
+             Add Image
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.ProfileController.UpdateUserImage(System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="image">
+             a FormFile that holds the image
+            </param>
+             <summary>
+             Update User Profile Image
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.ProfileController.DeleteUserImage(System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+             <summary>
+             Delete User Profile Image
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SearchController.SearchUser(System.String,System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="name">
+             a string object holds a user name
+            </param>
+             <summary>
+             Search user
+             </summary>
+             <returns>
+             return user object
+             </returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SearchController.SearchArtist(System.String,System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="artistname">
+             a string object holds a user name
+            </param>
+             <summary>
+             Search user
+             </summary>
+             <returns>
+             return artist object
+             </returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SettingsController.ResetPassword(System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+             <summary>
+            reset password
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SettingsController.VerifyPasswordToken(MusicPlatform.Model.User.ResetPassword,System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="resetPassword">
+            an object to reset a password
+            </param>
+             <summary>
+            verify token/reset password confirmation
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SettingsController.ChangeUsername(MusicPlatform.Model.User.UserName,System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="name">
+            an object used to change user's username
+            </param>
+             <summary>
+             change username
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongController.UploadSong(System.String,MusicPlatform.Model.Library.DTO.SongCreate)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="newSong">
+             an object to create a new song model
+            </param>
+             <summary>
+             Upload a new song
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongController.UpdateSong(System.String,System.String,MusicPlatform.Model.Library.DTO.SongUpdate)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             an object that holds a song name
+            </param>
+            <param name="updatedSong">
+             an object to update a song
+            </param>
+             <summary>
+             Update an existing song
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongController.DeleteSong(System.String,System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             an object that holds a song name
+            </param>
+             <summary>
+             delete an existing song
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongCreditController.AddSongCredit(System.String,System.String,MusicPlatform.Model.Library.DTO.CreditCreate)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             an object holds a song name
+            </param>
+            <param name="newCredit">
+             an object to create a new credit model
+            </param>
+             <summary>
+             Add a song credit
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongCreditController.UpdateSongCredit(System.String,System.String,MusicPlatform.Model.Library.DTO.CreditUpdate)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             an object to create a new song model
+            </param>
+            <param name="updateCredit">
+             an object to update a credit model
+            </param>
+             <summary>
+             Update an existing song credit
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongCreditController.DeleteSongCredit(System.String,System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             an object to create a new song model
+            </param>
+             <summary>
+             Update an existing song credit
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongsController.GetSongs(System.String)">
+            <param name="songName">
+             an object to create a new song model
+            </param>
+             <summary>
+             Get Available songs
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongsController.GetArtistSong(System.String,System.String)">
+            <param name="artist">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             an object to create a new song model
+            </param>
+             <summary>
+            Get Artist Song
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongsController.DownloadSong(System.String,System.String)">
+            <param name="artist">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             an object to create a new song model
+            </param>
+             <summary>
+             Update an existing song credit
+             </summary>
+        </member>
+    </members>
+</doc>
