@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Services;
 using System;
@@ -18,8 +19,22 @@ namespace MusicPlatform.Controllers
             this.userDetail = userDetail;
             this._profile = _profile;
         }
+
+        ///<param name="username">
+        ///an string object 
+        ///</param>
+        ///<param name="follower">
+        /// a string object
+        ///</param>
+        /// <summary>
+        /// Follow user
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpPost("{follower}")]
-        public async Task<ActionResult> FollowArtist([FromRoute] string username, string follower)
+        public async Task<ActionResult> Follow([FromRoute] string username, string follower)
         {
 
             try
@@ -49,9 +64,21 @@ namespace MusicPlatform.Controllers
             
         }
 
-
+        ///<param name="username">
+        ///an strig object 
+        ///</param>
+        ///<param name="follower">
+        /// a string object
+        ///</param>
+        /// <summary>
+        /// Unfollow user
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpDelete("{follower}")]
-        public async Task<ActionResult> UnFollowArtist([FromRoute] string username, string follower)
+        public async Task<ActionResult> UnFollow([FromRoute] string username, string follower)
         {
 
             try

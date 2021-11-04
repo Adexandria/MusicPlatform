@@ -23,6 +23,16 @@ namespace MusicPlatform.Controllers
             this._song = _song;
             this.mapper = mapper;
         }
+
+        /// <summary>
+        /// Get Trending Songs
+        /// </summary>
+        /// 
+        /// <returns>return songsDTO Objects</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpGet]
         public ActionResult<IEnumerable<SongsDTO>> GetTrendingSongs()
         {

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.Library.DTO;
 using MusicPlatform.Model.User.Profile.DTO;
@@ -26,6 +27,16 @@ namespace MusicPlatform.Controllers
             this._blob = _blob;
         }
 
+        ///<param name="songName">
+        /// an object to create a new song model
+        ///</param>
+        /// <summary>
+        /// Get Available songs
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpGet]
         public ActionResult<IEnumerable<SongsDTO>> GetSongs(string songName)
         {
@@ -42,8 +53,21 @@ namespace MusicPlatform.Controllers
             }
 
         }
-        [HttpGet("{artist}/{songName}")]
-        public async Task<ActionResult<SongDTO>> GetSong(string artist,string songName)
+        ///<param name="artist">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// an object to create a new song model
+        ///</param>
+        /// <summary>
+        ///Get Artist Song
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
+        [HttpGet("{songName}")]
+        public async Task<ActionResult<SongDTO>> GetArtistSong(string artist,string songName)
         {
             try
             {
@@ -67,7 +91,20 @@ namespace MusicPlatform.Controllers
             }
 
         }
-        [HttpGet("{artist}/{songName}/Download")]
+        ///<param name="artist">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// an object to create a new song model
+        ///</param>
+        /// <summary>
+        /// Update an existing song credit
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
+        [HttpGet("{songName}/Download")]
         public async Task<ActionResult<SongDTO>> DownloadSong(string artist, string songName)
         {
             try

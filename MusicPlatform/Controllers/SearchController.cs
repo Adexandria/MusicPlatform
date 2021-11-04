@@ -2,14 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MusicPlatform.Model.Library;
-using MusicPlatform.Model.Library.DTO;
 using MusicPlatform.Model.User.Profile.ProfileDTO;
 using MusicPlatform.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace MusicPlatform.Controllers
 {
@@ -25,8 +22,23 @@ namespace MusicPlatform.Controllers
             this.mapper = mapper;
             this.userDetail = userDetail;
         }
-       
-        
+
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="name">
+        /// a string object holds a user name
+        ///</param>
+        /// <summary>
+        /// Search user
+        /// </summary>
+        /// <returns>
+        /// return user object
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpGet("users/{name}")]
         public ActionResult<IEnumerable<UsersDTO>>SearchUser([FromRoute] string username,string name)
         {
@@ -47,7 +59,24 @@ namespace MusicPlatform.Controllers
 
             }
         }
-    
+
+
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="artistname">
+        /// a string object holds a user name
+        ///</param>
+        /// <summary>
+        /// Search user
+        /// </summary>
+        /// <returns>
+        /// return artist object
+        /// </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpGet("artists/{artistname}")]
         public ActionResult<IEnumerable<ArtistsDTO>> SearchArtist([FromRoute] string username,string artistname)
         {

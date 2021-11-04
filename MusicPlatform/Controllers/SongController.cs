@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.Library;
 using MusicPlatform.Model.Library.DTO;
@@ -19,19 +18,30 @@ namespace MusicPlatform.Controllers
     public class SongController : ControllerBase
     {
         private readonly IBlob _blob;
-        private readonly ISong _song;
-        private readonly UserManager<UserModel> _userManager;
+        private readonly ISong _song; 
         private readonly IMapper mapper;
         private readonly IUser userDetail;
-        public SongController(IBlob _blob, IMapper mapper, IUser userDetail, ISong _song, UserManager<UserModel> _userManager)
+        public SongController(IBlob _blob, IMapper mapper, IUser userDetail, ISong _song)
         {
             this._blob = _blob;
             this.mapper = mapper;
             this.userDetail = userDetail;
             this._song = _song;
-            this._userManager = _userManager;
         }
 
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="newSong">
+        /// an object to create a new song model
+        ///</param>
+        /// <summary>
+        /// Upload a new song
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpPost]
         public async Task<IActionResult> UploadSong(string username,[FromForm]SongCreate newSong)
         {
@@ -57,6 +67,22 @@ namespace MusicPlatform.Controllers
             
         }
 
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// an object that holds a song name
+        ///</param>
+        ///<param name="updatedSong">
+        /// an object to update a song
+        ///</param>
+        /// <summary>
+        /// Update an existing song
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpPut("{songName}")]
         public async Task<IActionResult> UpdateSong(string username,string songName, [FromForm] SongUpdate updatedSong)
         {
@@ -86,7 +112,19 @@ namespace MusicPlatform.Controllers
             }
            
         }
-
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// an object that holds a song name
+        ///</param>
+        /// <summary>
+        /// delete an existing song
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpDelete("{songName}")]
         public async Task<IActionResult> DeleteSong(string username, string songName)
         {

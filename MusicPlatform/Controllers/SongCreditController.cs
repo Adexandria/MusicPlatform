@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.Library;
 using MusicPlatform.Model.Library.DTO;
@@ -24,6 +25,22 @@ namespace MusicPlatform.Controllers
             this._song = _song;
         }
 
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// an object holds a song name
+        ///</param>
+        ///<param name="newCredit">
+        /// an object to create a new credit model
+        ///</param>
+        /// <summary>
+        /// Add a song credit
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpPost]
         public async Task<IActionResult> AddSongCredit([FromRoute] string username, [FromRoute] string songName, CreditCreate newCredit)
         {
@@ -51,6 +68,22 @@ namespace MusicPlatform.Controllers
             
         }
 
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// an object to create a new song model
+        ///</param>
+        ///<param name="updateCredit">
+        /// an object to update a credit model
+        ///</param>
+        /// <summary>
+        /// Update an existing song credit
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpPut]
         public async Task<IActionResult> UpdateSongCredit([FromRoute] string username, [FromRoute] string songName, CreditUpdate updateCredit)
         {
@@ -78,7 +111,19 @@ namespace MusicPlatform.Controllers
             }
             
         }
-
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// an object to create a new song model
+        ///</param>
+        /// <summary>
+        /// Update an existing song credit
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpDelete]
         public async Task<IActionResult> DeleteSongCredit([FromRoute] string username, [FromRoute] string songName)
         {

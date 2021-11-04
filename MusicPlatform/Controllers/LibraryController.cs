@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.Library.DTO;
 using MusicPlatform.Services;
@@ -26,6 +27,18 @@ namespace MusicPlatform.Controllers
             this._song = _song;
         }
 
+        ///<param name="username">
+        ///an string object 
+        ///</param>
+        /// <summary>
+        /// Get User Library
+        /// </summary>
+        /// 
+        /// <returns>returns UserLibraries Objects </returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpGet]
         public ActionResult<IEnumerable<UserLibrariesDTO>> GetUserLibrary(string username)
         {
@@ -48,6 +61,22 @@ namespace MusicPlatform.Controllers
             }
            
         }
+
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// a string object that holds the song name
+        ///</param>
+        /// <summary>
+        ///Search Songs
+        /// </summary>
+        /// 
+        /// <returns>User Library objects</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpGet("songs")]
         public ActionResult<IEnumerable<UserLibraryDTO>> SearchSongs(string username,string songName)
         {
@@ -74,6 +103,22 @@ namespace MusicPlatform.Controllers
             }
             
         }
+
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// a string object that holds the song name
+        ///</param>
+        /// <summary>
+        /// Add library
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpPost("{songName}")]
         public async Task<IActionResult> AddLibrary(string username,string songName)
         {
@@ -99,6 +144,20 @@ namespace MusicPlatform.Controllers
             }
             
         }
+
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// a string object that holds the song name
+        ///</param>
+        /// <summary>
+        /// Remove Song From library
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpDelete("{songName}")]
         public async Task<IActionResult> RemoveFromLibrary(string username, string songName)
         {
