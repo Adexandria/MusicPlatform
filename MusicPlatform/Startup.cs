@@ -47,11 +47,11 @@ namespace MusicPlatform
             services.AddScoped<ILibrary, LibraryRepository>();
             services.AddDbContext<IdentityDb>(opts =>
             {
-                opts.UseSqlServer(Configuration["ConnectionStrings:MusicPlatform"]).EnableSensitiveDataLogging();
+                opts.UseSqlServer(Configuration["ConnectionStrings:MusicPlatform"], o => o.EnableRetryOnFailure()).EnableSensitiveDataLogging();
             });
             services.AddDbContext<DataDb>(opts =>
             {
-                opts.UseSqlServer(Configuration["ConnectionStrings:MusicPlatform"]).EnableSensitiveDataLogging();
+                opts.UseSqlServer(Configuration["ConnectionStrings:MusicPlatform"],o=> o.EnableRetryOnFailure()).EnableSensitiveDataLogging();
             });
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
