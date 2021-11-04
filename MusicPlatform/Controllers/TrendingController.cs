@@ -11,6 +11,8 @@ namespace MusicPlatform.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class TrendingController : ControllerBase
     {
         private readonly ISong _song;

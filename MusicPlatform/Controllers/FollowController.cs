@@ -10,6 +10,8 @@ namespace MusicPlatform.Controllers
     [Route("api/{username}/[controller]")]
     [ApiController]
     [Authorize("BasicAuthentication")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class FollowController : ControllerBase
     {
         private readonly IUserProfile _profile;

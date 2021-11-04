@@ -15,6 +15,8 @@ namespace MusicPlatform.Controllers
     [Route("api/{username}/[controller]")]
     [Authorize("BasicAuthentication",Roles ="Artist")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class SongController : ControllerBase
     {
         private readonly IBlob _blob;

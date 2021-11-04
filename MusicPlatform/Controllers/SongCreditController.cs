@@ -13,6 +13,8 @@ namespace MusicPlatform.Controllers
     [Route("api/{username}/{songName}/[controller]")]
     [Authorize("BasicAuthentication", Roles = "Artist")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class SongCreditController : ControllerBase
     {
         private readonly ISong _song;

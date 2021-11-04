@@ -13,6 +13,8 @@ namespace MusicPlatform.Controllers
     [Route("api/{username}/[controller]")]
     [Authorize("BasicAuthentication")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class SearchController : ControllerBase
     {
         private readonly IMapper mapper;

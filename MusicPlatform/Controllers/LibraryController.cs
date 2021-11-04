@@ -13,6 +13,8 @@ namespace MusicPlatform.Controllers
     [Route("api/{username}/[controller]")]
     [ApiController]
     [Authorize("BasicAuthentication")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class LibraryController : ControllerBase
     {
         private readonly IUser userDetail;
