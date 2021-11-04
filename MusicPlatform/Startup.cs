@@ -18,6 +18,12 @@ using Azure.Storage.Blobs;
 using Azure.Core.Extensions;
 using Microsoft.Extensions.Azure;
 using Azure.Storage.Queues;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Reflection;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace MusicPlatform
 {
@@ -39,6 +45,18 @@ namespace MusicPlatform
                 .RequireAuthenticatedUser()
                 .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
+            });
+            services.AddApiVersioning(config =>
+            {
+                config.DefaultApiVersion = new ApiVersion(1, 0);
+                config.AssumeDefaultVersionWhenUnspecified = true;
+                config.ReportApiVersions = true;
+                config.ApiVersionReader = new HeaderApiVersionReader("api-version");
+            });
+            services.AddVersionedApiExplorer(setup =>
+            {
+                setup.GroupNameFormat = "'v'VVV";
+                setup.SubstituteApiVersionInUrl = true;
             });
             services.AddScoped<IUser, UserDetail>();
             services.AddScoped<IUserProfile, UserProfileRepository>();
@@ -71,10 +89,25 @@ namespace MusicPlatform
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("AdeDowloadAPISpecification", new OpenApiInfo()
+                c.SwaggerDoc("v1", new OpenApiInfo()
                 {
                     Title = "AdeDownload API",
                     Version = "1.0",
+                    Description = "Download Music for Free",
+                    Contact = new OpenApiContact()
+                    {
+                        Email = "adeolaaderibigbe09@gmail.com",
+                        Name = "Adeola Aderibigbe", 
+                        Url = new Uri("https://github.com/Adexandria")
+
+                    }
+
+                });
+                
+                c.SwaggerDoc("v2", new OpenApiInfo() 
+                {
+                    Title = "AdeDownload API",
+                    Version = "2.0",
                     Description = "Download Music for Free",
                     Contact = new OpenApiContact()
                     {
@@ -83,7 +116,6 @@ namespace MusicPlatform
                         Url = new Uri("https://github.com/Adexandria")
 
                     }
-
                 });
                 c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
                 {
@@ -142,7 +174,7 @@ namespace MusicPlatform
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataDb context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataDb context, IApiVersionDescriptionProvider provider)
         {
             if (env.IsDevelopment())
             {
@@ -150,9 +182,15 @@ namespace MusicPlatform
             }
             app.UseHttpsRedirection();
             app.UseSwagger();
+
             app.UseSwaggerUI(setupAction =>
             {
-                setupAction.SwaggerEndpoint("/swagger/AdeDowloadAPISpecification/swagger.json", "AdeDowload API");
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    setupAction.SwaggerEndpoint(
+                        $"/swagger/{description.GroupName}/swagger.json",
+                        description.GroupName.ToUpperInvariant());
+                }
                 setupAction.RoutePrefix = string.Empty;
             });
             app.UseRouting();
@@ -194,19 +232,5 @@ namespace MusicPlatform
         }
     }
 }
-    internal static class StartupExtensions
-    {
-        public static IAzureClientBuilder<BlobServiceClient, BlobClientOptions> AddBlobServiceClient(this AzureClientFactoryBuilder builder, string serviceUriOrConnectionString, bool preferMsi)
-        {
-            if (preferMsi && Uri.TryCreate(serviceUriOrConnectionString, UriKind.Absolute, out Uri serviceUri))
-            {
-                return builder.AddBlobServiceClient(serviceUri);
-            }
-            else
-            {
-                return builder.AddBlobServiceClient(serviceUriOrConnectionString);
-            }
-        }
-
-    }
+ 
 
