@@ -47,7 +47,7 @@ namespace MusicPlatform.Controllers
         /// Sign up a new user
         /// </summary>
         /// 
-        /// <returns>A string status</returns>
+        /// <returns>200 response</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -93,7 +93,7 @@ namespace MusicPlatform.Controllers
         /// Sign up a new user
         /// </summary>
         /// 
-        /// <returns>A string status</returns>
+        /// <returns>200 response</returns>
         //The Function creates a new user
         //using user manager library
         //then logins in the newly created user
@@ -146,7 +146,7 @@ namespace MusicPlatform.Controllers
         ///email confrimation
         /// </summary>
         /// 
-        /// <returns>A string status</returns>
+        /// <returns>200 response</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -183,7 +183,7 @@ namespace MusicPlatform.Controllers
         ///Login User
         /// </summary>
         /// 
-        /// <returns>A string status</returns>
+        /// <returns>200 response</returns>
 
         //To generate the token to reset password
         [ProducesResponseType(StatusCodes.Status200OK)]
