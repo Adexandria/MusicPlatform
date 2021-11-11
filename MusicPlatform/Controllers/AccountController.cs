@@ -19,7 +19,7 @@ namespace MusicPlatform.Controllers
    
     [ApiController]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+    //[ApiVersion("2.0")]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
@@ -58,18 +58,16 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                    var signupUser = mapper.Map<UserModel>(newUser);
+                    UserModel signupUser = mapper.Map<UserModel>(newUser);
                     if (newUser.Password.Equals(newUser.RetypePassword))
-                    { 
-                       
+                    {                    
                         IdentityResult identity = await userManager.CreateAsync(signupUser, signupUser.PasswordHash);
-
                         if (identity.Succeeded)
                         {
                             await userManager.AddToRoleAsync(signupUser, "User");
                             await userManager.AddClaimAsync(signupUser, new Claim($"{signupUser.UserName }","User"));
-                           await _profile.AddUserProfile(signupUser.UserName);
-                            var token = await EmailConfirmationToken(signupUser);
+                            await _profile.AddUserProfile(signupUser.UserName);
+                            string token = await EmailConfirmationToken(signupUser);
                             return this.StatusCode(StatusCodes.Status201Created, $"Welcome,{signupUser.UserName} use this {token} to verify email");
                         }
                         else
@@ -109,7 +107,7 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var signupUser = mapper.Map<UserModel>(newArtist);
+                UserModel signupUser = mapper.Map<UserModel>(newArtist);
                 if (newArtist.Password.Equals(newArtist.RetypePassword))
                 {
                     signupUser.Verified = true; 
@@ -119,7 +117,7 @@ namespace MusicPlatform.Controllers
                     {
                         await userManager.AddToRoleAsync(signupUser, "Artist");
                         await userManager.AddClaimAsync(signupUser, new Claim( $"{signupUser.UserName }","Artist"));
-                        var token = await EmailConfirmationToken(signupUser);
+                        string token = await EmailConfirmationToken(signupUser);
                         return this.StatusCode(StatusCodes.Status201Created, $"Welcome,{signupUser.UserName} use this {token} to verify email");
                     }
                     else
@@ -158,9 +156,9 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await GetUser(username);
+                UserModel currentUser = await GetUser(username);
                 if (currentUser == null) return NotFound("username doesn't exist");
-                var result = await userManager.ConfirmEmailAsync(currentUser, token.GeneratedToken);
+                IdentityResult result = await userManager.ConfirmEmailAsync(currentUser, token.GeneratedToken);
                 if (result.Succeeded)
                 {
                     return this.StatusCode(StatusCodes.Status200OK, $"Welcome,{currentUser.UserName} Email has been verified");
@@ -199,19 +197,19 @@ namespace MusicPlatform.Controllers
             try
             {
                 
-                var logindetails = mapper.Map<UserModel>(user);
-                var currentUser = await userManager.FindByNameAsync(logindetails.UserName);
+                UserModel logindetails = mapper.Map<UserModel>(user);
+                UserModel currentUser = await userManager.FindByNameAsync(logindetails.UserName);
                 if (currentUser == null) 
                 { 
                     return NotFound("Username doesn't exist");
                 }
 
                 //This verfies the user password by using IPasswordHasher interface
-                var passwordVerifyResult = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, user.Password);
+                PasswordVerificationResult passwordVerifyResult = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, user.Password);
                 if (passwordVerifyResult.ToString() == "Success")
                 {
                     await signInManager.PasswordSignInAsync(currentUser.UserName, currentUser.PasswordHash, false, false);
-                    var bearertoken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{currentUser.UserName}:{user.Password}"));
+                    string bearertoken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{currentUser.UserName}:{user.Password}"));
                     return Ok($"bearer:{bearertoken}");
                 }
 
@@ -234,7 +232,7 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await userManager.FindByNameAsync(username);
+                UserModel currentUser = await userManager.FindByNameAsync(username);
                 if (currentUser == null)
                 {
                     return NotFound("Username doesn't exist");
@@ -252,6 +250,8 @@ namespace MusicPlatform.Controllers
                return BadRequest(e.Message);
             }
         }
+
+
         [NonAction]
         private async Task<string> EmailConfirmationToken(UserModel newUser)
         {
