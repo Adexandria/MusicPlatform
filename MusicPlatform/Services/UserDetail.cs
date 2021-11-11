@@ -19,17 +19,17 @@ namespace MusicPlatform.Services
         }
         public async Task<string> GetUserId(string username)
         {
-            var currentUser = await GetUser(username);
+            UserModel currentUser = await GetUser(username);
             return currentUser.Id;
         }
         public async Task<bool> IsVerified(string username)
         {
-            var currentUser = await GetUser(username);
+            UserModel currentUser = await GetUser(username);
             return currentUser.Verified;
         }
         public async Task<UserModel> GetUser(string username)
         {
-            var currentUser = await db.UserModel.Where(s => s.UserName == username).AsNoTracking().FirstOrDefaultAsync();
+            UserModel currentUser = await db.UserModel.Where(s => s.UserName == username).AsNoTracking().FirstOrDefaultAsync();
             if (currentUser != null)
             {
                 db.Entry(currentUser).State = EntityState.Detached;
@@ -41,22 +41,20 @@ namespace MusicPlatform.Services
         {
             get
             {
-                var currentUsers = db.UserModel.Where(s => s.Verified == false).AsNoTracking();
+                IQueryable<UserModel> currentUsers = db.UserModel.Where(s => s.Verified == false).AsNoTracking();
                 if (currentUsers != null)
                 {
                     db.ChangeTracker.Clear();
                 }
                 return currentUsers;
             }
-          
-
         }
 
         public IEnumerable<UserModel> GetArtists
         {
             get
             {
-                var currentArtists = db.UserModel.Where(s => s.Verified == true).AsNoTracking();
+                IQueryable<UserModel> currentArtists = db.UserModel.Where(s => s.Verified == true).AsNoTracking();
                 if (currentArtists != null)
                 {
                     db.ChangeTracker.Clear();
@@ -68,7 +66,7 @@ namespace MusicPlatform.Services
 
         public IEnumerable<UserModel> SearchUser(string username)
         {
-            var currentUser =  db.UserModel.Where(s => s.UserName.StartsWith(username)).Where(s => s.Verified == false).AsNoTracking();
+            IQueryable<UserModel> currentUser =  db.UserModel.Where(s => s.UserName.StartsWith(username)).Where(s => s.Verified == false).AsNoTracking();
             if (currentUser != null)
             {
                 db.ChangeTracker.Clear();
@@ -78,7 +76,7 @@ namespace MusicPlatform.Services
 
         public  IEnumerable<UserModel> SearchArtist(string artist)
         {
-            var currentartist = db.UserModel.Where(s => s.UserName.StartsWith(artist)).Where(s => s.Verified == true).AsNoTracking();
+            IQueryable<UserModel> currentartist = db.UserModel.Where(s => s.UserName.StartsWith(artist)).Where(s => s.Verified == true).AsNoTracking();
             if (currentartist != null)
             {
                 db.ChangeTracker.Clear();

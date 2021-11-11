@@ -12,7 +12,7 @@ namespace MusicPlatform.Controllers
     [Authorize("BasicAuthentication")]
     [ApiController]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+    //[ApiVersion("2.0")]
     public class SettingsController : ControllerBase
     {
         readonly UserManager<UserModel> userManager;
@@ -30,7 +30,7 @@ namespace MusicPlatform.Controllers
         ///reset password
         /// </summary>
         /// 
-        /// <returns>A string status</returns>
+        /// <returns>200 response</returns>
 
         //To generate the token to reset password
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -44,9 +44,12 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await GetUser(username);
-                if (currentUser == null) return NotFound("username doesn't exist");
-                var passwordResetToken = await userManager.GeneratePasswordResetTokenAsync(currentUser);
+                UserModel currentUser = await GetUser(username);
+                if (currentUser == null)
+                {
+                    return NotFound("username doesn't exist");
+                }
+                string passwordResetToken = await userManager.GeneratePasswordResetTokenAsync(currentUser);
                 Token token = new Token() { GeneratedToken = passwordResetToken };
                 return Ok(token);
             }
@@ -68,7 +71,7 @@ namespace MusicPlatform.Controllers
         ///verify token/reset password confirmation
         /// </summary>
         /// 
-        /// <returns>A string status</returns>
+        /// <returns>200 response</returns>
         //To verify the Password reset token
         //which gives access to change the user's password
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -81,19 +84,22 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await GetUser(username);
-                if (currentUser == null) return NotFound("username doesn't exist");
-                var isVerify = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, resetPassword.NewPassword);
-                if (isVerify.ToString() == "Success") return BadRequest("Old password can't be new password");
-                var isVerifyResult = await userManager.ResetPasswordAsync(currentUser, resetPassword.Token, resetPassword.NewPassword);
+                UserModel currentUser = await GetUser(username);
+                if (currentUser == null)
+                {
+                    return NotFound("username doesn't exist");
+                }
+                PasswordVerificationResult isVerify = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, resetPassword.NewPassword);
+                if (isVerify.ToString() == "Success")
+                { 
+                    return BadRequest("Old password can't be new password"); 
+                }
+                IdentityResult isVerifyResult = await userManager.ResetPasswordAsync(currentUser, resetPassword.Token, resetPassword.NewPassword);
                 if (isVerifyResult.Succeeded)
                 {
                     return Ok("Password changed");
                 }
-                else
-                {
-                    return BadRequest("Try Again");
-                }
+                return BadRequest("Try Again");
             }
             catch (Exception e)
             {
@@ -113,7 +119,7 @@ namespace MusicPlatform.Controllers
         /// change username
         /// </summary>
         /// 
-        /// <returns>A string status</returns>
+        /// <returns>200 response</returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -125,9 +131,12 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await GetUser(username);
-                if (currentUser == null) return NotFound("username doesn't exist");
-                var result = await userManager.SetUserNameAsync(currentUser, name.NewUsername);
+                UserModel currentUser = await GetUser(username);
+                if (currentUser == null) 
+                {
+                    return NotFound("username doesn't exist");
+                }
+                IdentityResult result = await userManager.SetUserNameAsync(currentUser, name.NewUsername);
                 if (result.Succeeded)
                 {
                     return this.StatusCode(StatusCodes.Status200OK, "Successfully Changed");

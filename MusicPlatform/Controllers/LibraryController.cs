@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MusicPlatform.Model.Library;
 using MusicPlatform.Model.Library.DTO;
+using MusicPlatform.Model.User;
 using MusicPlatform.Services;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ namespace MusicPlatform.Controllers
     [ApiController]
     [Authorize("BasicAuthentication")]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+   // [ApiVersion("2.0")]
     public class LibraryController : ControllerBase
     {
         private readonly IUser userDetail;
@@ -47,13 +49,13 @@ namespace MusicPlatform.Controllers
 
             try
             {
-                var user = userDetail.GetUser(username).Result;
+                UserModel user = userDetail.GetUser(username).Result;
                 if (user == null)
                 {
                     return NotFound("user not found");
                 }
-                var currentLibrary = _library.GetLibrary(username);
-                var mappedLibrary = mapper.Map<IEnumerable<UserLibrariesDTO>>(currentLibrary);
+                IEnumerable<SongLibrary> currentLibrary = _library.GetLibrary(username);
+                IEnumerable<UserLibrariesDTO> mappedLibrary = mapper.Map<IEnumerable<UserLibrariesDTO>>(currentLibrary);
                 return Ok(mappedLibrary);
             }
             catch (Exception e)
@@ -85,17 +87,17 @@ namespace MusicPlatform.Controllers
 
             try
             {
-                var user = userDetail.GetUser(username).Result;
+                UserModel user = userDetail.GetUser(username).Result;
                 if (user == null)
                 {
                     return NotFound("user not found");
                 }
-                var currentSongs = _library.GetSongLibrary(username, songName);
+                IEnumerable<SongLibrary> currentSongs = _library.GetSongLibrary(username, songName);
                 if (currentSongs == null)
                 {
                     return NotFound();
                 }
-                var mappedLibrary = mapper.Map<IEnumerable<UserLibraryDTO>>(currentSongs);
+                IEnumerable<UserLibraryDTO> mappedLibrary = mapper.Map<IEnumerable<UserLibraryDTO>>(currentSongs);
                 return Ok(mappedLibrary);
             }
             catch (Exception e)
@@ -126,12 +128,12 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var user = await userDetail.GetUser(username);
+                UserModel user = await userDetail.GetUser(username);
                 if (user == null)
                 {
                     return NotFound("user not found");
                 }
-                var currentSong = await _song.GetSong(username, songName);
+                SongModel currentSong = await _song.GetSong(username, songName);
                 if (currentSong == null)
                 {
                     return NotFound();
@@ -166,7 +168,7 @@ namespace MusicPlatform.Controllers
 
             try
             {
-                var user = await userDetail.GetUser(username);
+                UserModel user = await userDetail.GetUser(username);
                 if (user == null)
                 {
                     return NotFound("user not found");

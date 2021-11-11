@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MusicPlatform.Model.User;
+using MusicPlatform.Model.User.Profile;
 using MusicPlatform.Model.User.Profile.ProfileDTO;
 using MusicPlatform.Services;
 using System;
@@ -14,7 +16,7 @@ namespace MusicPlatform.Controllers
     [Authorize("BasicAuthentication")]
     [ApiController]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+    //[ApiVersion("2.0")]
     public class ProfileController : ControllerBase
     {
         private readonly IUserProfile _profile;
@@ -45,18 +47,18 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentuser = await userDetail.GetUser(username);
+                UserModel currentuser = await userDetail.GetUser(username);
                 if (currentuser == null)
                 {
                     return NotFound("User not found");
                 }
-                var currentprofile = await _profile.GetUserProfile(username);
+                UserProfile currentprofile = await _profile.GetUserProfile(username);
                 if (currentprofile.User.Verified)
                 {
                     var mappedArtistProfile = mapper.Map<ArtistProfileDTO>(currentprofile);
                     return Ok(mappedArtistProfile);
                 }
-                var mappedUserProfile = mapper.Map<UserProfileDTO>(currentprofile);
+                UserProfileDTO mappedUserProfile = mapper.Map<UserProfileDTO>(currentprofile);
                 return Ok(mappedUserProfile);
             }
             catch (Exception e)
@@ -84,7 +86,7 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentuser = await userDetail.GetUser(username);
+                UserModel currentuser = await userDetail.GetUser(username);
                 if (currentuser == null)
                 {
                     return NotFound("User not found");
@@ -124,7 +126,7 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentuser = await userDetail.GetUser(username);
+                UserModel currentuser = await userDetail.GetUser(username);
                 if (currentuser == null)
                 {
                     return NotFound("User not found");
@@ -162,12 +164,12 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentuser = await userDetail.GetUser(username);
+                UserModel currentuser = await userDetail.GetUser(username);
                 if (currentuser == null)
                 {
                     return NotFound("User not found");
                 }
-                var currentImage = await _profile.GetImage(username);
+                UserImage currentImage = await _profile.GetImage(username);
                 if (currentImage != null)
                 {
                     await _profile.DeleteImage(username);

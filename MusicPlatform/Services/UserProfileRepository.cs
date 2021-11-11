@@ -30,19 +30,19 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(username));
                 }
-                var currentimage = await GetImage(username);
+                UserImage currentimage = await GetImage(username);
                 if (currentimage != null)
                 {
                     await UpdateUserImage(imageUrl, username);
                 }
                 else
                 {
-                    var userId = await userDetail.GetUserId(username);
+                    string userId = await userDetail.GetUserId(username);
                     if (userId == null)
                     {
                         throw new NullReferenceException(nameof(userId));
                     }
-                    var profileId = await GetUserProfileId(username);
+                    Guid profileId = await GetUserProfileId(username);
                     UserImage userImage = new UserImage()
                     {
                         ImageId = Guid.NewGuid(),
@@ -70,7 +70,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(url));
                 }
-                var currentImage = await GetImage(username);
+                UserImage currentImage = await GetImage(username);
                 if (currentImage == null)
                 {
                     throw new NullReferenceException(nameof(currentImage));
@@ -103,7 +103,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(username));
                 }
-                var currentimage = await GetImage(username);
+                UserImage currentimage = await GetImage(username);
                 if (currentimage == null)
                 {
                     throw new NullReferenceException(nameof(currentimage));
@@ -130,7 +130,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(username));
                 }
-                var userId = await userDetail.GetUserId(username);
+                string userId = await userDetail.GetUserId(username);
                 UserProfile userProfile = new UserProfile()
                 {
                     ProfileId = Guid.NewGuid(),
@@ -155,8 +155,8 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(username));
                 }
-                var userId = await userDetail.GetUserId(username);
-                var currentprofile = await db.Profiles.Where(s => s.UserId == userId)
+                string userId = await userDetail.GetUserId(username);
+                UserProfile currentprofile = await db.Profiles.Where(s => s.UserId == userId)
                     .Include(s => s.User).FirstOrDefaultAsync();
                 if (await userDetail.IsVerified(username))
                 {
@@ -194,10 +194,10 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(username));
                 }
-                var userId = await userDetail.GetUserId(username);
-                var artistId = await userDetail.GetUserId(stagename);
-                var userProfile = await GetUserProfile(username);
-                var artistProfile = await GetUserProfile(stagename);
+                string userId = await userDetail.GetUserId(username);
+                string artistId = await userDetail.GetUserId(stagename);
+                UserProfile userProfile = await GetUserProfile(username);
+                UserProfile artistProfile = await GetUserProfile(stagename);
                 FollowingModel model = new FollowingModel()
                 {
                     FollowingId = Guid.NewGuid(),
@@ -230,7 +230,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(followerId));
                 }
-                var currentFollowing = await GetFollowing(userId, followerId);
+                FollowingModel currentFollowing = await GetFollowing(userId, followerId);
                 db.Followings.Remove(currentFollowing);
                 await Save();
             }
@@ -253,7 +253,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(followerId));
                 }
-                var currentFollowing = await GetFollowing(userId, followerId);
+                FollowingModel currentFollowing = await GetFollowing(userId, followerId);
                 if(currentFollowing == null)
                 {
                     return false;
@@ -276,7 +276,7 @@ namespace MusicPlatform.Services
 
         public async Task<UserImage> GetImage(string username)
         {
-            var userId = await userDetail.GetUserId(username);
+            string userId = await userDetail.GetUserId(username);
             if (userId == null)
             {
                 throw new NullReferenceException(userId);
@@ -286,7 +286,7 @@ namespace MusicPlatform.Services
 
         private IEnumerable<SongModel> GetArtistSongs(string stagename)
         {
-            var artistId = userDetail.GetUserId(stagename).Result;
+            string artistId = userDetail.GetUserId(stagename).Result;
             return db.Songs.Where(s => s.UserId == artistId).Include(s=>s.SongImage).OrderByDescending(s => s.Download).Take(3).AsNoTracking();
         }
         private IEnumerable<FollowingModel> GetFollowers(string name)
@@ -295,7 +295,7 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(name));
             }
-            var artistId = userDetail.GetUserId(name).Result;
+            string artistId = userDetail.GetUserId(name).Result;
             return db.Followings.Where(s => s.FollowerId == artistId).AsNoTracking();
         }
 
@@ -306,12 +306,12 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(name));
             }
-            var userId = userDetail.GetUserId(name).Result;
+            string userId = userDetail.GetUserId(name).Result;
             return db.Followings.Where(s => s.UserId == userId).AsNoTracking();
         }
         private async Task<FollowingModel> GetFollowing(string userId, string artistId)
         {
-            var currentFollowing = await db.Followings.Where(s => s.UserId == userId).Where(s => s.FollowerId == artistId).AsNoTracking().FirstOrDefaultAsync();
+            FollowingModel currentFollowing = await db.Followings.Where(s => s.UserId == userId).Where(s => s.FollowerId == artistId).AsNoTracking().FirstOrDefaultAsync();
             if(currentFollowing != null)
             {
                 db.Entry(currentFollowing).State = EntityState.Detached;
@@ -320,7 +320,7 @@ namespace MusicPlatform.Services
         }
         private async Task<Guid> GetUserProfileId(string username)
         {
-            var userId = await userDetail.GetUserId(username);
+            string userId = await userDetail.GetUserId(username);
             return await db.Profiles.Where(s => s.UserId == userId).AsNoTracking().Select(s => s.ProfileId).FirstOrDefaultAsync();
         }
 

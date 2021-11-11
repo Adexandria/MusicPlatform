@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.Library;
 using MusicPlatform.Model.Library.DTO;
+using MusicPlatform.Model.User;
 using MusicPlatform.Services;
 using System;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace MusicPlatform.Controllers
     [Authorize("BasicAuthentication", Roles = "Artist")]
     [ApiController]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+    //[ApiVersion("2.0")]
     public class SongCreditController : ControllerBase
     {
         private readonly ISong _song;
@@ -48,17 +49,17 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("Username not found");
                 }
-                var currentSong = await _song.GetSong(username, songName);
+                SongModel currentSong = await _song.GetSong(username, songName);
                 if (currentSong == null)
                 {
                     return NotFound("Song doesn't exist");
                 }
-                var mappedCredit = mapper.Map<CreditModel>(newCredit);
+                CreditModel mappedCredit = mapper.Map<CreditModel>(newCredit);
                 await _song.AddCredit(currentSong.SongId, mappedCredit);
                 return Ok("Success");
             }
@@ -92,17 +93,17 @@ namespace MusicPlatform.Controllers
 
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("Username not found");
                 }
-                var currentSong = await _song.GetSong(username, songName);
+                SongModel currentSong = await _song.GetSong(username, songName);
                 if (currentSong == null)
                 {
                     return NotFound("Song doesn't exist");
                 }
-                var mappedCredit = mapper.Map<CreditModel>(updateCredit);
+                CreditModel mappedCredit = mapper.Map<CreditModel>(updateCredit);
                 await _song.UpdateCredit(mappedCredit, currentSong.SongId);
                 return Ok("Success");
             }
@@ -132,12 +133,12 @@ namespace MusicPlatform.Controllers
 
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("Username not found");
                 }
-                var currentSong = await _song.GetSong(username, songName);
+                SongModel currentSong = await _song.GetSong(username, songName);
                 if (currentSong == null)
                 {
                     return NotFound("Song doesn't exist");

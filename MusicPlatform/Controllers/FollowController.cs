@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MusicPlatform.Model.User;
 using MusicPlatform.Services;
 using System;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace MusicPlatform.Controllers
     [ApiController]
     [Authorize("BasicAuthentication")]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+    //[ApiVersion("2.0")]
     public class FollowController : ControllerBase
     {
         private readonly IUserProfile _profile;
@@ -41,12 +42,12 @@ namespace MusicPlatform.Controllers
 
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("User not found");
                 }
-                var currentFollower = await userDetail.GetUser(follower);
+                UserModel currentFollower = await userDetail.GetUser(follower);
                 if (currentFollower == null)
                 {
                     return NotFound("artist not found");
@@ -85,12 +86,12 @@ namespace MusicPlatform.Controllers
 
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("User not found");
                 }
-                var currentFollower = await userDetail.GetUser(follower);
+                UserModel currentFollower = await userDetail.GetUser(follower);
                 if (currentFollower == null)
                 {
                     return NotFound("artist not found");

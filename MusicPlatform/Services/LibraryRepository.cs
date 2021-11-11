@@ -23,7 +23,7 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(songId));
             }
-            var userId = await userDetail.GetUserId(username);
+            string userId = await userDetail.GetUserId(username);
             if (userId == null)
             {
                 throw new NullReferenceException(nameof(userId));
@@ -44,7 +44,7 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(username));
             }
-            var userId =  userDetail.GetUserId(username).Result;
+            string userId =  userDetail.GetUserId(username).Result;
             if(userId == null)
             {
                 throw new NullReferenceException(nameof(userId));
@@ -61,12 +61,12 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(songId));
             }
-            var userId = await userDetail.GetUserId(username);
+            string userId = await userDetail.GetUserId(username);
             if (userId == null)
             {
                 throw new NullReferenceException(nameof(userId));
             }
-            var song = await GetSongLibrary(userId,songId);
+            SongLibrary song = await GetSongLibrary(userId,songId);
             if(song == null)
             {
                 throw new NullReferenceException(nameof(song));
@@ -81,7 +81,7 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(songName));
             }
-            var userId = userDetail.GetUserId(username).Result;
+            string userId = userDetail.GetUserId(username).Result;
             if (userId == null)
             {
                 throw new NullReferenceException(nameof(userId));
@@ -91,7 +91,7 @@ namespace MusicPlatform.Services
         }
         private async Task<SongLibrary> GetSongLibrary(string username,Guid songId)
         {
-            var userId = await userDetail.GetUserId(username);
+            string userId = await userDetail.GetUserId(username);
             if (userId == null)
             {
                 throw new NullReferenceException(nameof(userId));

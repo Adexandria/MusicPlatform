@@ -199,7 +199,7 @@
             reset password
              </summary>
              
-             <returns>A string status</returns>
+             <returns>200 response</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.SettingsController.VerifyPasswordToken(MusicPlatform.Model.User.ResetPassword,System.String)">
             <param name="username">
@@ -212,7 +212,7 @@
             verify token/reset password confirmation
              </summary>
              
-             <returns>A string status</returns>
+             <returns>200 response</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.SettingsController.ChangeUsername(MusicPlatform.Model.User.UserName,System.String)">
             <param name="username">
@@ -225,7 +225,7 @@
              change username
              </summary>
              
-             <returns>A string status</returns>
+             <returns>200 response</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.SongController.UploadSong(System.String,MusicPlatform.Model.Library.DTO.SongCreate)">
             <param name="username">
@@ -253,6 +253,45 @@
              </summary>
         </member>
         <member name="M:MusicPlatform.Controllers.SongController.DeleteSong(System.String,System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             an object that holds a song name
+            </param>
+             <summary>
+             delete an existing song
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongController.AddSongImage(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             an object that holds a song name
+            </param>
+            <param name="image">
+            an image object
+            </param>
+             <summary>
+             delete an existing song
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongController.UpdateSongImage(System.String,System.String,Microsoft.AspNetCore.Http.IFormFile)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+            <param name="songName">
+             an object that holds a song name
+            </param>
+            <param name="image">
+            an image object
+            </param>
+             <summary>
+             delete an existing song
+             </summary>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SongController.DeleteSongImage(System.String,System.String)">
             <param name="username">
             an string object that holds a user name
             </param>

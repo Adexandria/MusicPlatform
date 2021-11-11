@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MusicPlatform.Model.Library;
 using MusicPlatform.Model.Library.DTO;
+using MusicPlatform.Model.User;
 using MusicPlatform.Services;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ namespace MusicPlatform.Controllers
     [ApiController]
     [AllowAnonymous]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+   // [ApiVersion("2.0")]
     public class NewSongsController : ControllerBase
     {
         private readonly ISong _song;
@@ -38,8 +40,8 @@ namespace MusicPlatform.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<SongsDTO>> GetTrendingSongs()
         {
-            var newSongs = _song.GetNewSongs;
-            var mappedSongs = mapper.Map<IEnumerable<SongsDTO>>(newSongs);
+            IEnumerable<SongModel> newSongs = _song.GetNewSongs;
+            IEnumerable<SongsDTO> mappedSongs = mapper.Map<IEnumerable<SongsDTO>>(newSongs);
             return Ok(mappedSongs);
         }
     }

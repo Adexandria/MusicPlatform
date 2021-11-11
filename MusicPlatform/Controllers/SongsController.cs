@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MusicPlatform.Model.Library;
 using MusicPlatform.Model.Library.DTO;
 using MusicPlatform.Model.User.Profile.DTO;
 using MusicPlatform.Services;
@@ -16,7 +18,7 @@ namespace MusicPlatform.Controllers
     [ApiController]
     [AllowAnonymous]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+    //[ApiVersion("2.0")]
     public class SongsController : ControllerBase
     {
         private readonly ISong _song;
@@ -44,8 +46,8 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var songs = _song.GetSong(songName);
-                var mappedSongs = mapper.Map<IEnumerable<SongsDTO>>(songs);
+                IEnumerable<SongModel> songs = _song.GetSong(songName);
+                IEnumerable<SongsDTO> mappedSongs = mapper.Map<IEnumerable<SongsDTO>>(songs);
                 return Ok(mappedSongs);
             }
             catch (Exception e)
@@ -55,6 +57,7 @@ namespace MusicPlatform.Controllers
             }
 
         }
+
         ///<param name="artist">
         ///an string object that holds a user name
         ///</param>
@@ -78,12 +81,12 @@ namespace MusicPlatform.Controllers
                     Response.Cookies.Append("Download", "4");
                 }
 
-                var song = await _song.GetSong(artist,songName);
+                SongModel song = await _song.GetSong(artist,songName);
                 if(song == null)
                 {
                     return NotFound("Song not found");
                 }
-                var mappedSongs = mapper.Map<SongDTO>(song);
+                SongDTO mappedSongs = mapper.Map<SongDTO>(song);
                 return Ok(mappedSongs);
             }
             catch (Exception e)
@@ -111,20 +114,20 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var isSigned = IsSignedIn();
+                bool isSigned = IsSignedIn();
                 if (!isSigned)
                 {
                     return BadRequest("You reached your limit, sign in");
                 }
 
-                var song = await _song.GetSong(artist, songName);
+                SongModel song = await _song.GetSong(artist, songName);
                 if (song == null)
                 {
                     return NotFound("Song not found");
                 }
                 
                 await  _song.DownloadSong(artist,songName);
-                var file = await _blob.DownloadFile(song.SongUrl);
+                Azure.Response<BlobDownloadInfo> file = await _blob.DownloadFile(song.SongUrl);
                 return File(file.Value.Content, "audio/mpeg", songName);
 
             }
@@ -135,16 +138,18 @@ namespace MusicPlatform.Controllers
             }
 
         }
+
+
         [NonAction]
         public bool IsFree()
         {
-            var x = Request.Cookies["Download"];
-            var y = Convert.ToInt32(x);
+            string x = Request.Cookies["Download"];
+            int y = Convert.ToInt32(x);
             if (y == 0)
             {
                 return false;
             }
-           var value = (y - 1).ToString();
+            string value = (y - 1).ToString();
            Response.Cookies.Append("Download", value);  
            return true;
         }

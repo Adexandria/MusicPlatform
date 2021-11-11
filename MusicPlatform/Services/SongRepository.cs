@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MusicPlatform.Model.Library;
+using MusicPlatform.Model.User.Profile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +53,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(songId));
                 }
-                var currentCredit = await GetCredit(songId);
+                CreditModel currentCredit = await GetCredit(songId);
                 if (currentCredit == null)
                 {
                     throw new NullReferenceException(nameof(currentCredit));
@@ -79,7 +80,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(credit));
                 }
-                var currentcredit = await GetCredit(songId);
+                CreditModel currentcredit = await GetCredit(songId);
                 if (currentcredit == null)
                 {
                     throw new NullReferenceException(nameof(currentcredit));
@@ -172,7 +173,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(songId));
                 }
-                var currentImage = await GetSongImage(songId);
+                SongImage currentImage = await GetSongImage(songId);
                 if (currentImage == null)
                 {
                     throw new NullReferenceException(nameof(currentImage));
@@ -201,8 +202,8 @@ namespace MusicPlatform.Services
                     throw new NullReferenceException(nameof(song));
                 }
                 song.SongId = Guid.NewGuid();
-                var artistId = await userDetail.GetUserId(username);
-                var profile = await _profile.GetUserProfile(username);
+                string artistId = await userDetail.GetUserId(username);
+                UserProfile profile = await _profile.GetUserProfile(username);
                 song.UserProfileProfileId = profile.ProfileId;
                 song.UserId = artistId;
                 await db.Songs.AddAsync(song);
@@ -223,7 +224,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(songName));
                 }
-                var currentSong = await GetSong(artistId, songName);
+                SongModel currentSong = await GetSong(artistId, songName);
                 if (currentSong == null)
                 {
                     throw new NullReferenceException(nameof(currentSong));
@@ -252,7 +253,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(username));
                 }
-                var artistId = await userDetail.GetUserId(username);
+                string artistId = await userDetail.GetUserId(username);
                 var currentSong = await db.Songs.Where(a => a.SongName.ToLower() == songName.ToLower()).Where(s => s.UserId == artistId)
                     .Include(s => s.User).Include(s=>s.SongImage).Include(s=>s.CreditModel).Include(s=>s.SongImage).FirstOrDefaultAsync();
                 return currentSong;
@@ -292,7 +293,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(song));
                 }
-                var currentSong = await GetSong(artistId, songName);
+                SongModel currentSong = await GetSong(artistId, songName);
                 if (currentSong == null)
                 {
                     throw new NullReferenceException(nameof(currentSong));
@@ -319,7 +320,7 @@ namespace MusicPlatform.Services
                 {
                     throw new NullReferenceException(nameof(songName));
                 }
-                var currentSong = await GetSong(artist, songName);
+                SongModel currentSong = await GetSong(artist, songName);
                 if (currentSong == null)
                 {
                     throw new NullReferenceException(nameof(currentSong));
@@ -360,9 +361,6 @@ namespace MusicPlatform.Services
                 return db.Songs.OrderBy(s => s.ReleasedDate).Take(5);
             }
         }
-
-
-
 
         private async Task<CreditModel> GetCredit(Guid songId)
         {

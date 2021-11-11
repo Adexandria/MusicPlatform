@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MusicPlatform.Model.User;
 using MusicPlatform.Model.User.Profile.ProfileDTO;
 using MusicPlatform.Services;
 using System;
@@ -14,7 +15,7 @@ namespace MusicPlatform.Controllers
     [Authorize("BasicAuthentication")]
     [ApiController]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+   // [ApiVersion("2.0")]
     public class SearchController : ControllerBase
     {
         private readonly IMapper mapper;
@@ -46,13 +47,13 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = userDetail.GetUser(username).Result;
+                UserModel currentUser = userDetail.GetUser(username).Result;
                 if (currentUser == null)
                 {
                     return NotFound("User not found");
                 }
-                var artists = userDetail.SearchUser(name);
-                var mappedArtists = mapper.Map<IEnumerable<UsersDTO>>(artists);
+                IEnumerable<UserModel> artists = userDetail.SearchUser(name);
+                IEnumerable<UsersDTO> mappedArtists = mapper.Map<IEnumerable<UsersDTO>>(artists);
                 return Ok(mappedArtists);
             }
             catch (Exception e)
@@ -84,13 +85,13 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = userDetail.GetUser(username).Result;
+                UserModel currentUser = userDetail.GetUser(username).Result;
                 if (currentUser == null)
                 {
                     return NotFound("User not found");
                 }
-                var artists = userDetail.SearchArtist(artistname);
-                var mappedArtists = mapper.Map<IEnumerable<ArtistsDTO>>(artists);
+                IEnumerable<UserModel> artists = userDetail.SearchArtist(artistname);
+                IEnumerable<ArtistsDTO> mappedArtists = mapper.Map<IEnumerable<ArtistsDTO>>(artists);
                 return Ok(mappedArtists);
             }
             catch (Exception e)

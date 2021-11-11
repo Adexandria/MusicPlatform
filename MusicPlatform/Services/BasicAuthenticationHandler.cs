@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MusicPlatform.Model.User;
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -41,8 +40,8 @@ namespace MusicPlatform.Services
             }
 
             // Get authorization key
-            var authorizationHeader = Request.Headers["Authorization"].ToString();
-            var authBearerRegex = new Regex(@"Bearer (.*)");
+            string authorizationHeader = Request.Headers["Authorization"].ToString();
+            Regex authBearerRegex = new Regex(@"Bearer (.*)");
             
 
             if (!authBearerRegex.IsMatch(authorizationHeader))
@@ -50,24 +49,24 @@ namespace MusicPlatform.Services
                 return Task.FromResult(AuthenticateResult.Fail("Authorization code not formatted properly."));
             }
 
-            var authBase64 = Encoding.UTF8.GetString(Convert.FromBase64String(authBearerRegex.Replace(authorizationHeader, "$1")));
-            var authSplit = authBase64.Split(Convert.ToChar(":"), 2);
-            var authUsername = authSplit[0];
-            var authPassword = authSplit.Length > 1 ? authSplit[1] : throw new Exception("Unable to get password");
+            string authBase64 = Encoding.UTF8.GetString(Convert.FromBase64String(authBearerRegex.Replace(authorizationHeader, "$1")));
+            string[] authSplit = authBase64.Split(Convert.ToChar(":"), 2);
+            string authUsername = authSplit[0];
+            string authPassword = authSplit.Length > 1 ? authSplit[1] : throw new Exception("Unable to get password");
 
 
 
-            var currentUser = userManager.FindByNameAsync(authUsername).Result; 
+            UserModel currentUser = userManager.FindByNameAsync(authUsername).Result; 
             if(currentUser != null)
             {
-                var isVerify = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, authPassword);
+                PasswordVerificationResult isVerify = passwordHasher.VerifyHashedPassword(currentUser, currentUser.PasswordHash, authPassword);
 
                 if (isVerify.ToString() != "Success")
                 {
                 return Task.FromResult(AuthenticateResult.Fail("The username or password is not correct."));
                 }
-               
-                var claimsPrincipal = principalFactory.CreateAsync(currentUser).Result;
+
+                ClaimsPrincipal claimsPrincipal = principalFactory.CreateAsync(currentUser).Result;
                 AuthenticationTicket ticket = new AuthenticationTicket(claimsPrincipal,"BasicAuthentication");
                 return Task.FromResult(AuthenticateResult.Success(ticket));
             }

@@ -16,7 +16,7 @@ namespace MusicPlatform.Controllers
     [Authorize("BasicAuthentication",Roles ="Artist")]
     [ApiController]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+    //[ApiVersion("2.0")]
     public class SongController : ControllerBase
     {
         private readonly IBlob _blob;
@@ -49,14 +49,14 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("Username not found");
                 }
                 await _blob.UploadSong(newSong.Song,newSong.SongName);
                 string url = _blob.GetUri(newSong.SongName);
-                var mappedSong = mapper.Map<SongModel>(newSong);
+                SongModel mappedSong = mapper.Map<SongModel>(newSong);
                 mappedSong.SongUrl = url;
                 await _song.AddSong(mappedSong, username);
                 return Ok("Success");
@@ -90,19 +90,19 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("Username not found");
                 }
-                var currentSong = await _song.GetSong(username, songName);
+                SongModel currentSong = await _song.GetSong(username, songName);
                 if (currentSong == null)
                 {
                     return NotFound();
                 }
                 await _blob.UploadSong(updatedSong.Song,songName);
                 string url = _blob.GetUri(updatedSong.Song.FileName).ToString();
-                var mappedSong = mapper.Map<SongModel>(updatedSong);
+                SongModel mappedSong = mapper.Map<SongModel>(updatedSong);
                 mappedSong.SongUrl = url;
                 await _song.UpdateSong(mappedSong, songName, username);
                 return Ok("Success");
@@ -132,12 +132,12 @@ namespace MusicPlatform.Controllers
         {
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("Username not found");
                 }
-                var currentSong = await _song.GetSong(username, songName);
+                SongModel currentSong = await _song.GetSong(username, songName);
                 if (currentSong == null)
                 {
                     return NotFound();
@@ -153,18 +153,33 @@ namespace MusicPlatform.Controllers
             
         }
 
-
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// an object that holds a song name
+        ///</param>
+        ///<param name="image">
+        ///an image object
+        ///</param>
+        /// <summary>
+        /// delete an existing song
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpPost("{songName}/image")]
         public async Task<IActionResult> AddSongImage([FromRoute]string username,[FromRoute]string songName,IFormFile image)
         {
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("Username not found");
                 }
-                var currentSong = await _song.GetSong(username, songName);
+                SongModel currentSong = await _song.GetSong(username, songName);
                 if (currentSong == null)
                 {
                     return NotFound("Song doesn't exist");
@@ -181,17 +196,34 @@ namespace MusicPlatform.Controllers
             }
             
         }
+
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// an object that holds a song name
+        ///</param>
+        ///<param name="image">
+        ///an image object
+        ///</param>
+        /// <summary>
+        /// delete an existing song
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpPut("{songName}/image")]
         public async Task<IActionResult> UpdateSongImage([FromRoute] string username, [FromRoute] string songName, IFormFile image)
         {
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("Username not found");
                 }
-                var currentSong = await _song.GetSong(username, songName);
+                SongModel currentSong = await _song.GetSong(username, songName);
                 if (currentSong == null)
                 {
                     return NotFound("Song doesn't exist");
@@ -208,18 +240,30 @@ namespace MusicPlatform.Controllers
             }
            
         }
-
+        ///<param name="username">
+        ///an string object that holds a user name
+        ///</param>
+        ///<param name="songName">
+        /// an object that holds a song name
+        ///</param>
+        /// <summary>
+        /// delete an existing song
+        /// </summary>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
         [HttpDelete("{songName}/image")]
         public async Task<IActionResult> DeleteSongImage([FromRoute] string username, [FromRoute] string songName)
         {
             try
             {
-                var currentUser = await userDetail.GetUser(username);
+                UserModel currentUser = await userDetail.GetUser(username);
                 if (currentUser == null)
                 {
                     return NotFound("Username not found");
                 }
-                var currentSong = await _song.GetSong(username, songName);
+                SongModel currentSong = await _song.GetSong(username, songName);
                 if (currentSong == null)
                 {
                     return NotFound("Song doesn't exist");
