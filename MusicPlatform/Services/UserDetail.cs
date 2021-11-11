@@ -12,16 +12,19 @@ namespace MusicPlatform.Services
     public class UserDetail : IUser
     {
         private readonly DataDb db;
+        private readonly UserManager<UserModel> userManager;
  
-        public UserDetail( DataDb db)
+        public UserDetail( DataDb db, UserManager<UserModel> userManager)
         {
             this.db = db ?? throw new NullReferenceException(nameof(db));
+            this.userManager = userManager ?? throw new NullReferenceException(nameof(userManager));
         }
         public async Task<string> GetUserId(string username)
         {
             UserModel currentUser = await GetUser(username);
             return currentUser.Id;
         }
+       
         public async Task<bool> IsVerified(string username)
         {
             UserModel currentUser = await GetUser(username);
@@ -32,10 +35,16 @@ namespace MusicPlatform.Services
             UserModel currentUser = await db.UserModel.Where(s => s.UserName == username).AsNoTracking().FirstOrDefaultAsync();
             if (currentUser != null)
             {
-                db.Entry(currentUser).State = EntityState.Detached;
+                db.ChangeTracker.Clear(); 
             }
             return currentUser;
         }
+        public async Task AddUser(UserModel user)
+        {
+            await db.UserModel.AddAsync(user);
+            await db.SaveChangesAsync();
+        }
+
 
         public IEnumerable<UserModel> GetUsers
         {
@@ -83,5 +92,7 @@ namespace MusicPlatform.Services
             }
             return currentartist;
         }
+
+       
     }
 }

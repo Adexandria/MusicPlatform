@@ -28,15 +28,18 @@ namespace MusicPlatform.Controllers
         readonly SignInManager<UserModel> signInManager;
         readonly IMapper mapper;
         readonly IUserProfile _profile;
+        readonly IUser user;
         
 
-        public AccountController(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, IMapper mapper, IPasswordHasher<UserModel> passwordHasher, IUserProfile _profile)
+        public AccountController(SignInManager<UserModel> signInManager, UserManager<UserModel> userManager, 
+            IMapper mapper, IPasswordHasher<UserModel> passwordHasher, IUserProfile _profile, IUser user)
         {
             this.mapper = mapper;
             this.userManager = userManager;
             this.passwordHasher = passwordHasher;
             this.signInManager = signInManager;
             this._profile = _profile;
+            this.user = user;
         }
 
 
@@ -66,6 +69,7 @@ namespace MusicPlatform.Controllers
                         {
                             await userManager.AddToRoleAsync(signupUser, "User");
                             await userManager.AddClaimAsync(signupUser, new Claim($"{signupUser.UserName }","User"));
+                            await user.AddUser(signupUser);
                             await _profile.AddUserProfile(signupUser.UserName);
                             string token = await EmailConfirmationToken(signupUser);
                             return this.StatusCode(StatusCodes.Status201Created, $"Welcome,{signupUser.UserName} use this {token} to verify email");
@@ -117,6 +121,8 @@ namespace MusicPlatform.Controllers
                     {
                         await userManager.AddToRoleAsync(signupUser, "Artist");
                         await userManager.AddClaimAsync(signupUser, new Claim( $"{signupUser.UserName }","Artist"));
+                        await user.AddUser(signupUser);
+                        await _profile.AddUserProfile(signupUser.UserName);
                         string token = await EmailConfirmationToken(signupUser);
                         return this.StatusCode(StatusCodes.Status201Created, $"Welcome,{signupUser.UserName} use this {token} to verify email");
                     }
@@ -150,6 +156,7 @@ namespace MusicPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [AllowAnonymous]
         [Produces("application/json")]
         [HttpPost("{username}/emailconfirmation")]
         public async Task<ActionResult> VerifyEmailToken(Token token, string username)
@@ -222,12 +229,21 @@ namespace MusicPlatform.Controllers
             }
 
         }
+        ///<param name="username">
+        ///a user name string object
+        ///</param>
+        /// <summary>
+        ///sign out User
+        /// </summary>
+        /// 
+        /// <returns>200 response</returns>
 
+        //To generate the token to reset password
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize("BasicAuthentication")]
         [Produces("application/json")]
-        [HttpGet("{username}/signout")]
+        [HttpPost("{username}/signout")]
         public async Task<ActionResult> SignOut(string username)
         {
             try
@@ -251,7 +267,7 @@ namespace MusicPlatform.Controllers
             }
         }
 
-
+       
         [NonAction]
         private async Task<string> EmailConfirmationToken(UserModel newUser)
         {

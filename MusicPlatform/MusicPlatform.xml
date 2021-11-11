@@ -12,7 +12,7 @@
              Sign up a new user
              </summary>
              
-             <returns>A string status</returns>
+             <returns>200 response</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.AccountController.SignUpArtist(MusicPlatform.Model.User.SignUpDTO.SignUpArtist)">
             <param name="newArtist">
@@ -22,7 +22,7 @@
              Sign up a new user
              </summary>
              
-             <returns>A string status</returns>
+             <returns>200 response</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.AccountController.VerifyEmailToken(MusicPlatform.Model.User.Token,System.String)">
             <param name="username">
@@ -35,7 +35,7 @@
             email confrimation
              </summary>
              
-             <returns>A string status</returns>
+             <returns>200 response</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.AccountController.Login(MusicPlatform.Model.User.Login.Login)">
             <param name="user">
@@ -45,7 +45,27 @@
             Login User
              </summary>
              
-             <returns>A string status</returns>
+             <returns>200 response</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.AccountController.SignOut(System.String)">
+            <param name="username">
+            a user name string object
+            </param>
+             <summary>
+            sign out User
+             </summary>
+             
+             <returns>200 response</returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.AccountController.DeleteAccount(System.String)">
+            <param name="username">
+            a user name string object
+            </param>
+             <summary>
+            Delete user account
+             </summary>
+             
+             <returns>200 response</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.FollowController.Follow(System.String,System.String)">
             <param name="username">
@@ -103,7 +123,7 @@
              Add library
              </summary>
              
-             <returns>A string status</returns>
+             <returns>200 response</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.LibraryController.RemoveFromLibrary(System.String,System.String)">
             <param name="username">

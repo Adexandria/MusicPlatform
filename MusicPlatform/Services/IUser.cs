@@ -10,9 +10,9 @@ namespace MusicPlatform.Services
     public interface IUser 
     {
         Task<UserModel> GetUser(string username);
+        Task AddUser(UserModel user);
         Task<bool> IsVerified(string username);
         Task<string> GetUserId(string username);
-
         IEnumerable<UserModel> GetUsers { get; }
         IEnumerable<UserModel> GetArtists { get; }
 
