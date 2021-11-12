@@ -38,7 +38,6 @@ namespace MusicPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Produces("application/json")]
-        [Authorize("BasicAuthentication")]
         [HttpGet("{username}/password/reset")]
         public async Task<ActionResult<Token>> ResetPassword(string username)
         {
@@ -125,7 +124,7 @@ namespace MusicPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Produces("application/json")]
-        [Authorize("BasicAuthentication")]
+        
         [HttpPost("{username}/change")]
         public async Task<ActionResult<UserModel>> ChangeUsername(UserName name, string username)
         {

@@ -114,6 +114,9 @@ namespace MusicPlatform.Controllers
         ///<param name="songName">
         /// a string object that holds the song name
         ///</param>
+        ///<param name="artist">
+        ///a string object that holds the artist name
+        ///</param>
         /// <summary>
         /// Add library
         /// </summary>
@@ -123,8 +126,8 @@ namespace MusicPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        [HttpPost("{songName}")]
-        public async Task<IActionResult> AddLibrary(string username,string songName)
+        [HttpPost("{artist}/songName")]
+        public async Task<IActionResult> AddLibrary(string username,string artist,string songName)
         {
             try
             {
@@ -133,7 +136,7 @@ namespace MusicPlatform.Controllers
                 {
                     return NotFound("user not found");
                 }
-                SongModel currentSong = await _song.GetSong(username, songName);
+                SongModel currentSong = await _song.GetSong(artist, songName);
                 if (currentSong == null)
                 {
                     return NotFound();
@@ -155,6 +158,9 @@ namespace MusicPlatform.Controllers
         ///<param name="songName">
         /// a string object that holds the song name
         ///</param>
+        ///<param name="artist">
+        ///a string object that holds the artist name
+        ///</param>
         /// <summary>
         /// Remove Song From library
         /// </summary>
@@ -162,8 +168,8 @@ namespace MusicPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces("application/json")]
-        [HttpDelete("{songName}")]
-        public async Task<IActionResult> RemoveFromLibrary(string username, string songName)
+        [HttpDelete("{artist}/songName")]
+        public async Task<IActionResult> RemoveFromLibrary(string username, string artist, string songName)
         {
 
             try
@@ -173,12 +179,12 @@ namespace MusicPlatform.Controllers
                 {
                     return NotFound("user not found");
                 }
-                var currentSong = await _song.GetSong(username, songName);
+                var currentSong = await _song.GetSong(artist, songName);
                 if (currentSong == null)
                 {
                     return NotFound();
                 }
-                await _library.RemoveFromLibrary(username, currentSong.SongId);
+                await _library.RemoveFromLibrary(artist,currentSong.SongId);
                 return Ok("Success");
             }
             catch (Exception e)

@@ -208,7 +208,7 @@ namespace MusicPlatform.Controllers
                 UserModel currentUser = await userManager.FindByNameAsync(logindetails.UserName);
                 if (currentUser == null) 
                 { 
-                    return NotFound("Username doesn't exist");
+                    return NotFound("username or password is not correct");
                 }
 
                 //This verfies the user password by using IPasswordHasher interface
@@ -220,7 +220,7 @@ namespace MusicPlatform.Controllers
                     return Ok($"bearer:{bearertoken}");
                 }
 
-                return BadRequest("password is not correct");
+                return BadRequest("username or password is not correct");
             }
             catch (Exception e)
             {

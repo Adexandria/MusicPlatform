@@ -50,7 +50,7 @@ namespace MusicPlatform.Services
                 throw new NullReferenceException(nameof(userId));
             }
             return  db.Libraries.Where(s => s.UserId == userId).Include(s => s.Song).Include(s=>s.User)
-               .Include(s => s.Song.SongImage);
+               .Include(s => s.Song.SongImage).Include(s=>s.Song.User);
         }
 
        
@@ -61,12 +61,7 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(songId));
             }
-            string userId = await userDetail.GetUserId(username);
-            if (userId == null)
-            {
-                throw new NullReferenceException(nameof(userId));
-            }
-            SongLibrary song = await GetSongLibrary(userId,songId);
+            SongLibrary song = await GetSongLibrary(username,songId);
             if(song == null)
             {
                 throw new NullReferenceException(nameof(song));
@@ -86,7 +81,8 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(userId));
             }
-            return db.Libraries.Where(s => s.Song.SongName.StartsWith(songName)).Where(s=>s.UserId == userId).OrderBy(s => s.SongId).Include(s => s.Song)
+            return db.Libraries.Where(s => s.Song.SongName.StartsWith(songName)).Where(s => s.UserId == userId).OrderBy(s => s.SongId).Include(s => s.Song)
+                .Include(s => s.Song.User)
                 .Include(s => s.User).Include(a=>a.Song.SongImage);
         }
         private async Task<SongLibrary> GetSongLibrary(string username,Guid songId)
@@ -96,7 +92,7 @@ namespace MusicPlatform.Services
             {
                 throw new NullReferenceException(nameof(userId));
             }
-            return await db.Libraries.Where(s => s.SongId == songId).Where(s=>s.UserId == userId).FirstOrDefaultAsync();
+            return await db.Libraries.Where(s => s.SongId == songId).Where(s=>s.Song.UserId == userId).FirstOrDefaultAsync();
         }
     }
 }

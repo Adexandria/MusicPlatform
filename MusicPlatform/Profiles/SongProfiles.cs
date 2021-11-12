@@ -29,12 +29,12 @@ namespace MusicPlatform.Profiles
             CreateMap<CreditCreate, CreditModel>();
             CreateMap<CreditUpdate, CreditModel>();
 
-            CreateMap<SongLibrary, UserLibraryDTO>().ForPath(s => s.Artist, opt => opt.MapFrom(s => s.User.UserName))
+            CreateMap<SongLibrary, UserLibraryDTO>().ForPath(s => s.Artist, opt => opt.MapFrom(s => s.Song.User.UserName))
                 .ForPath(s => s.Imageurl, opt => opt.MapFrom(s => s.Song.SongImage.ImageUrl))
                 .ForPath(s => s.SongUrl, opt => opt.MapFrom(s => s.Song.SongUrl))
                 .ForPath(s => s.SongName, opt => opt.MapFrom(s => s.Song.SongName));
 
-            CreateMap<SongLibrary, UserLibrariesDTO>().ForPath(s => s.Artist, opt => opt.MapFrom(s => s.User.UserName))
+            CreateMap<SongLibrary, UserLibrariesDTO>().ForPath(s => s.Artist, opt => opt.MapFrom(s => s.Song.User.UserName))
               .ForPath(s => s.SongName, opt => opt.MapFrom(s => s.Song.SongName));
         }
     }

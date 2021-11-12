@@ -57,16 +57,6 @@
              
              <returns>200 response</returns>
         </member>
-        <member name="M:MusicPlatform.Controllers.AccountController.DeleteAccount(System.String)">
-            <param name="username">
-            a user name string object
-            </param>
-             <summary>
-            Delete user account
-             </summary>
-             
-             <returns>200 response</returns>
-        </member>
         <member name="M:MusicPlatform.Controllers.FollowController.Follow(System.String,System.String)">
             <param name="username">
             an string object 
@@ -112,12 +102,15 @@
              
              <returns>User Library objects</returns>
         </member>
-        <member name="M:MusicPlatform.Controllers.LibraryController.AddLibrary(System.String,System.String)">
+        <member name="M:MusicPlatform.Controllers.LibraryController.AddLibrary(System.String,System.String,System.String)">
             <param name="username">
             an string object that holds a user name
             </param>
             <param name="songName">
              a string object that holds the song name
+            </param>
+            <param name="artist">
+            a string object that holds the artist name
             </param>
              <summary>
              Add library
@@ -125,12 +118,15 @@
              
              <returns>200 response</returns>
         </member>
-        <member name="M:MusicPlatform.Controllers.LibraryController.RemoveFromLibrary(System.String,System.String)">
+        <member name="M:MusicPlatform.Controllers.LibraryController.RemoveFromLibrary(System.String,System.String,System.String)">
             <param name="username">
             an string object that holds a user name
             </param>
             <param name="songName">
              a string object that holds the song name
+            </param>
+            <param name="artist">
+            a string object that holds the artist name
             </param>
              <summary>
              Remove Song From library
@@ -183,7 +179,7 @@
              Delete User Profile Image
              </summary>
         </member>
-        <member name="M:MusicPlatform.Controllers.SearchController.SearchUser(System.String,System.String)">
+        <member name="M:MusicPlatform.Controllers.SearchController.SearchUser(System.String)">
             <param name="username">
             an string object that holds a user name
             </param>
@@ -197,11 +193,11 @@
              return user object
              </returns>
         </member>
-        <member name="M:MusicPlatform.Controllers.SearchController.SearchArtist(System.String,System.String)">
+        <member name="M:MusicPlatform.Controllers.SearchController.SearchArtist(System.String)">
             <param name="username">
             an string object that holds a user name
             </param>
-            <param name="artistname">
+            <param name="name">
              a string object holds a user name
             </param>
              <summary>
@@ -210,6 +206,16 @@
              <returns>
              return artist object
              </returns>
+        </member>
+        <member name="M:MusicPlatform.Controllers.SearchController.GetUserProfile(System.String)">
+            <param name="username">
+            an string object that holds a user name
+            </param>
+             <summary>
+             Get User Profile
+             </summary>
+             
+             <returns>UserProfile Object</returns>
         </member>
         <member name="M:MusicPlatform.Controllers.SettingsController.ResetPassword(System.String)">
             <param name="username">

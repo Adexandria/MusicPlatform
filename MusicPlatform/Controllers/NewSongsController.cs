@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace MusicPlatform.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/songs/new")]
     [ApiController]
     [AllowAnonymous]
     [ApiVersion("1.0")]
