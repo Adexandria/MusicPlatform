@@ -67,6 +67,7 @@ namespace MusicPlatform.Services
                 }
 
                 ClaimsPrincipal claimsPrincipal = principalFactory.CreateAsync(currentUser).Result;
+               
                 AuthenticationTicket ticket = new AuthenticationTicket(claimsPrincipal,"BasicAuthentication");
                 return Task.FromResult(AuthenticateResult.Success(ticket));
             }

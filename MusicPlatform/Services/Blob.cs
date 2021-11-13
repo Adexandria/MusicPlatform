@@ -3,6 +3,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Text_Speech.Services
@@ -18,14 +19,15 @@ namespace Text_Speech.Services
 
         public async Task UploadSong(IFormFile model,string fileName)
         {
-
-            BlobClient blobClient = GetBlobServiceClient(fileName);
+            var file = Regex.Replace(fileName, @"\s+", "");
+            BlobClient blobClient = GetBlobServiceClient(file);
             await blobClient.UploadAsync(model.OpenReadStream(), overwrite: true);
 
         }
         public string GetUri(string file) 
         {
-            BlobClient blobClient = GetBlobServiceClient(file);
+            var filename = Regex.Replace(file, @"\s+", "");
+            BlobClient blobClient = GetBlobServiceClient(filename);
             if (blobClient.ExistsAsync().Result)
             {
                 return blobClient.Uri.AbsoluteUri;

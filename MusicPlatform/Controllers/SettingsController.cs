@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MusicPlatform.Model.User;
+using MusicPlatform.Services;
 using System;
 using System.Threading.Tasks;
 
 namespace MusicPlatform.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/{username}/[controller]")]
     [Authorize("BasicAuthentication")]
     [ApiController]
     [ApiVersion("1.0")]
@@ -16,10 +17,12 @@ namespace MusicPlatform.Controllers
     public class SettingsController : ControllerBase
     {
         readonly UserManager<UserModel> userManager;
+        readonly IUser user;
         private readonly IPasswordHasher<UserModel> passwordHasher;
-        public SettingsController(UserManager<UserModel> userManager, IPasswordHasher<UserModel> passwordHasher)
+        public SettingsController(UserManager<UserModel> userManager, IUser user, IPasswordHasher<UserModel> passwordHasher)
         {
             this.userManager = userManager;
+            this.user = user;
             this.passwordHasher = passwordHasher;
         }
 
@@ -38,7 +41,7 @@ namespace MusicPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Produces("application/json")]
-        [HttpGet("{username}/password/reset")]
+        [HttpGet("password/reset")]
         public async Task<ActionResult<Token>> ResetPassword(string username)
         {
             try
@@ -78,7 +81,7 @@ namespace MusicPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Produces("application/json")]
-        [HttpPost("{username}/password/verifytoken")]
+        [HttpPost("password/verifytoken")]
         public async Task<ActionResult> VerifyPasswordToken(ResetPassword resetPassword, string username)
         {
             try
@@ -123,9 +126,8 @@ namespace MusicPlatform.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Produces("application/json")]
-        
-        [HttpPost("{username}/change")]
+        [Produces("application/json")]       
+        [HttpPost("username")]
         public async Task<ActionResult<UserModel>> ChangeUsername(UserName name, string username)
         {
             try
@@ -133,11 +135,13 @@ namespace MusicPlatform.Controllers
                 UserModel currentUser = await GetUser(username);
                 if (currentUser == null) 
                 {
-                    return NotFound("username doesn't exist");
+                    return NotFound("user doesn't exist");
                 }
                 IdentityResult result = await userManager.SetUserNameAsync(currentUser, name.NewUsername);
                 if (result.Succeeded)
                 {
+                   
+                    await user.UpdateUser(name.NewUsername,username);
                     return this.StatusCode(StatusCodes.Status200OK, "Successfully Changed");
                 }
                 else

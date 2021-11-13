@@ -1,8 +1,5 @@
 ﻿using MusicPlatform.Model.User;
-using MusicPlatform.Model.User.Profile;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MusicPlatform.Services
@@ -11,6 +8,7 @@ namespace MusicPlatform.Services
     {
         Task<UserModel> GetUser(string username);
         Task AddUser(UserModel user);
+        Task UpdateUser(string username,string user);
         Task<bool> IsVerified(string username);
         Task<string> GetUserId(string username);
         IEnumerable<UserModel> GetUsers { get; }

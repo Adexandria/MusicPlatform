@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MusicPlatform.Controllers
 {
-    [Route("api/{username}/{songName}/[controller]")]
+    [Route("api/{username}/{songName}/credit")]
     [Authorize("BasicAuthentication", Roles = "Artist")]
     [ApiController]
     [ApiVersion("1.0")]

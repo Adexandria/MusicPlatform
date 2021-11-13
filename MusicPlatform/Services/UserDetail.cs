@@ -35,6 +35,7 @@ namespace MusicPlatform.Services
             UserModel currentUser = await db.UserModel.Where(s => s.UserName == username).AsNoTracking().FirstOrDefaultAsync();
             if (currentUser != null)
             {
+                db.Entry(currentUser).State = EntityState.Detached;
                 db.ChangeTracker.Clear(); 
             }
             return currentUser;
@@ -93,6 +94,19 @@ namespace MusicPlatform.Services
             return currentartist;
         }
 
-       
+        public async Task UpdateUser(string username,string user)
+        {
+            UserModel currentUser = await GetUser(user);
+            if(currentUser== null)
+            {
+                throw new NullReferenceException(nameof(currentUser));
+            }
+            currentUser.UserName = username;
+            currentUser.NormalizedUserName = username.ToUpper();
+            db.UserModel.Attach(currentUser);
+            db.Entry(currentUser).Property(s => s.UserName).IsModified = true;
+            db.Entry(currentUser).Property(s => s.NormalizedUserName).IsModified = true;
+            await db.SaveChangesAsync();
+        }
     }
 }

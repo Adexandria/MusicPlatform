@@ -86,7 +86,7 @@ namespace MusicPlatform.Services
                     throw new NullReferenceException(nameof(currentcredit));
                 }
                 db.Entry(currentcredit).State = EntityState.Detached;
-                credit.SongId = songId;
+                credit = UpdateCredit(currentcredit, credit);
                 db.Entry(credit).State = EntityState.Modified;
                 await Save();
             }
@@ -370,7 +370,28 @@ namespace MusicPlatform.Services
         {
             return await db.SongImages.Where(s => s.SongId == songId).FirstOrDefaultAsync();
         }
-
+        private CreditModel UpdateCredit(CreditModel credit,CreditModel updatedCredit)
+        {
+            updatedCredit.SongId = credit.SongId;
+            updatedCredit.CreditId = credit.CreditId;
+            if (string.IsNullOrEmpty(updatedCredit.Performer))
+            {
+                updatedCredit.Performer = credit.Performer;
+            }
+            if (string.IsNullOrEmpty(updatedCredit.Producer))
+            {
+                updatedCredit.Producer = credit.Producer;
+            }
+            if (string.IsNullOrEmpty(updatedCredit.Writer))
+            {
+                updatedCredit.Writer = credit.Writer;
+            }
+            if (string.IsNullOrEmpty(updatedCredit.RecordLabel))
+            {
+                updatedCredit.RecordLabel = credit.RecordLabel;
+            }
+            return updatedCredit;
+        }
        
     }
 }

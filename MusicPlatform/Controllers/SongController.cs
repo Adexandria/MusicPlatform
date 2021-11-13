@@ -101,7 +101,7 @@ namespace MusicPlatform.Controllers
                     return NotFound();
                 }
                 await _blob.UploadSong(updatedSong.Song,songName);
-                string url = _blob.GetUri(updatedSong.Song.FileName).ToString();
+                string url = _blob.GetUri(songName).ToString();
                 SongModel mappedSong = mapper.Map<SongModel>(updatedSong);
                 mappedSong.SongUrl = url;
                 await _song.UpdateSong(mappedSong, songName, username);

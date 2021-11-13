@@ -30,9 +30,6 @@ namespace MusicPlatform.Controllers
             this._profile =_profile;
         }
 
-        ///<param name="username">
-        ///an string object that holds a user name
-        ///</param>
         ///<param name="name">
         /// a string object holds a user name
         ///</param>
@@ -62,10 +59,6 @@ namespace MusicPlatform.Controllers
             }
         }
 
-
-       ///<param name="username">
-        ///an string object that holds a user name
-        ///</param>
         ///<param name="name">
         /// a string object holds a user name
         ///</param>
